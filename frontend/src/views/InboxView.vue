@@ -120,6 +120,7 @@
         <div class="row-sb"><span class="muted">First message</span><b>{{ dateOnly(detail.stats.first_message) }}</b></div>
       </div>
       <button v-if="can('supervisor')" class="btn link" type="button" @click="applyAll">Apply agent &amp; mode to the whole number →</button>
+      <button v-if="can('supervisor')" class="btn danger" type="button" @click="deleteChat">Delete chat</button>
     </aside>
   </div>
 </template>
@@ -130,9 +131,9 @@ import { useRoute, useRouter } from "vue-router";
 import AppIcon from "../components/AppIcon.vue";
 import SegControl from "../components/SegControl.vue";
 import ToggleSwitch from "../components/ToggleSwitch.vue";
-import { get, patch, post } from "../api.js";
+import { del, get, patch, post } from "../api.js";
 import { can } from "../session.js";
-import { ago, clock, colorFor, dateOnly, fail, initials, signals, toast } from "../utils.js";
+import { ask, ago, clock, colorFor, dateOnly, fail, initials, signals, toast } from "../utils.js";
 
 const MODE_LABEL = { auto: "Auto", draft: "Draft", off: "Off" };
 const MODE_HINT = { auto: "The agent replies on its own.", draft: "The agent writes a draft; you approve it before it’s sent.", off: "The agent stays quiet. You reply manually." };
@@ -205,12 +206,27 @@ async function loadDetail({ scroll = true } = {}) {
 }
 
 function openChat(id) { router.replace({ name: "inbox", params: { chatId: id } }); }
-watch(() => route.params.chatId, (v) => { chatId.value = v ? Number(v) : null; loadDetail(); loadChats(); });
+watch(() => route.params.chatId, async (v) => {
+  chatId.value = v ? Number(v) : null;
+  await loadDetail();
+  loadChats();
+  signals.inbox++;   // opening a chat marks it read: let the sidebar badge update now
+});
 
 async function refreshAll() { await Promise.all([loadDetail({ scroll: false }), loadChats()]); signals.inbox++; }
 
 async function patchChat(body) {
   try { await patch(`/inbox/chats/${chatId.value}`, body); await refreshAll(); } catch (e) { fail(e); }
+}
+async function deleteChat() {
+  if (!(await ask(`Delete the chat with ${contactName.value}? All its messages are removed from Agentry. Nothing is deleted on the customer's phone.`,
+    { title: "Delete chat", ok: "Delete", danger: true }))) return;
+  try {
+    await del(`/inbox/chats/${chatId.value}`);
+    toast("Chat deleted");
+    router.replace({ name: "inbox" });
+    signals.inbox++;
+  } catch (e) { fail(e); }
 }
 async function applyAll() {
   await patchChat({ agent_id: chat.value.agent_id, mode: chat.value.mode, apply_to_connection: true });

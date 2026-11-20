@@ -129,3 +129,32 @@ def test_evolution_connection_setup_calls(client, monkeypatch):
     client.post(f"/api/inbox/messages/{draft['id']}/approve", json={})
     send = [c for c in calls if "/message/sendText/" in c[1]][-1]
     assert send[2]["number"] == "573001"
+
+
+def test_unread_count_and_delete_chat(setup_chat):
+    client, _, configure = setup_chat
+    conn = configure("off")
+    sim(client, conn, "hello", frm="5730099")
+    counts = client.get("/api/inbox/chats").get_json()["counts"]
+    assert counts["unread"] == 1
+    cid = client.get("/api/inbox/chats").get_json()["chats"][0]["id"]
+    client.get(f"/api/inbox/chats/{cid}")                       # opening marks it read
+    assert client.get("/api/inbox/chats").get_json()["counts"]["unread"] == 0
+    assert client.delete(f"/api/inbox/chats/{cid}").get_json() == {"ok": True}
+    assert client.get("/api/inbox/chats").get_json()["chats"] == []
+    assert client.get(f"/api/inbox/chats/{cid}").status_code == 404
+
+
+def test_connected_number_shows_linked_account(setup_chat):
+    from app.services import connections as csvc
+    from app.whatsapp.adapters import EvolutionAdapter
+    client, _, configure = setup_chat
+    conn = configure("off")
+    ev = EvolutionAdapter({"server_url": "x", "api_key": "k", "instance": "i"}).parse_webhook(
+        {"event": "connection.update", "data": {"state": "open", "wuid": "212723688997@s.whatsapp.net",
+                                                 "profileName": "Roland", "statusReason": 200}})[0]
+    assert (ev.status, ev.phone, ev.account, ev.detail) == ("connected", "212723688997", "Roland", "")
+    with client.c.application.app_context():
+        csvc.set_status(conn["id"], ev.status, ev.detail, ev.phone, ev.account, ev.picture)
+    n = next(c for c in client.get("/api/whatsapp/connections").get_json()["connections"] if c["id"] == conn["id"])
+    assert (n["phone_number"], n["account_name"]) == ("+212723688997", "Roland")

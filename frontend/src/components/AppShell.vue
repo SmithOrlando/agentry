@@ -81,7 +81,7 @@ async function loadStatus() {
   try {
     const [{ connections }, { counts }] = await Promise.all([get("/whatsapp/connections"), get("/inbox/chats", { filter: "drafts" })]);
     numbers.value = connections;
-    attention.value = counts.drafts + counts.needs_you;
+    attention.value = (counts.unread || 0) + counts.drafts;   // clears once chats are read / drafts handled
   } catch { /* the sidebar is best effort */ }
   refreshSetup();
 }

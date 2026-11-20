@@ -55,7 +55,7 @@ import ToggleSwitch from "../../components/ToggleSwitch.vue";
 import { useSettingsForm } from "../../composables/useSettingsForm.js";
 import { del, get, patch, post } from "../../api.js";
 import { can } from "../../session.js";
-import { fail } from "../../utils.js";
+import { ask, fail } from "../../utils.js";
 
 const admin = computed(() => can("admin"));
 const agents = ref([]);
@@ -96,7 +96,7 @@ async function saveAgent() {
 }
 
 async function removeAgent() {
-  if (!confirm(`Delete ${editing.value.name}? Chats it handles become unassigned.`)) return;
+  if (!(await ask(`Delete ${editing.value.name}? Chats it handles become unassigned.`, { ok: "Delete", danger: true }))) return;
   try { await del(`/agents/${editing.value.id}`); editorOpen.value = false; loadAgents(); } catch (e) { fail(e); }
 }
 

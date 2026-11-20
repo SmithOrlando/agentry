@@ -51,5 +51,10 @@ Outbound: we POST `{"to": "573001112233", "text": "…"}` to your `send_url` wit
 With `ENABLE_TEST_TOOLS=true` (never in production), create a **Sandbox** number, then **Simulate** (UI) or `POST /api/whatsapp/connections/<id>/simulate`.
 This runs the exact same pipeline as a real message.
 
+## Removing a number
+**WhatsApp › Remove** deletes the number and its chats in Agentry. For Evolution it also logs the phone out and deletes
+the instance on the Evolution server. If Evolution can't be reached, the number is still removed from Agentry; then delete the
+instance in Evolution yourself.
+
 ## Troubleshooting
 See OPERATIONS.md › "No replies on WhatsApp".

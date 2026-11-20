@@ -16,7 +16,8 @@
             <span class="tile num-tile" :style="{ background: colorFor(c.name) }"><AppIcon name="phone" /></span>
             <span class="chip dot" :class="status(c)[1]">{{ status(c)[0] }}</span>
           </div>
-          <div><b class="num-name">{{ c.name }}</b><span class="muted">{{ c.phone_number || "Number not set" }}</span></div>
+          <div><b class="num-name">{{ c.name }}</b>
+            <span class="muted">{{ [c.phone_number, c.account_name].filter(Boolean).join(" · ") || (c.status === "connected" ? "Linked" : "Not linked yet") }}</span></div>
           <div class="row-sb muted small num-foot"><span>{{ PROVIDER_LABEL[c.provider] }}</span><span>Last msg {{ ago(c.last_message_at) }}</span></div>
           <div class="row-c wrap">
             <button v-if="c.status !== 'connected' && c.provider === 'evolution' && can('admin')" class="btn pri" type="button" @click="showQR(c)">Reconnect</button>
@@ -24,6 +25,7 @@
             <template v-if="can('admin')">
               <button v-if="testTools" class="btn out" type="button" @click="openSim(c)">Simulate</button>
               <button class="btn out" type="button" @click="info = c">Details</button>
+              <button class="btn out danger-text" type="button" @click="remove(c)">Remove</button>
             </template>
           </div>
         </section>
@@ -105,7 +107,7 @@ import AppIcon from "../components/AppIcon.vue";
 import AppDialog from "../components/AppDialog.vue";
 import { del, get, post } from "../api.js";
 import { can, session } from "../session.js";
-import { ago, colorFor, copy, fail, signals, toast } from "../utils.js";
+import { ask, ago, colorFor, copy, fail, signals, toast } from "../utils.js";
 
 const PROVIDER_LABEL = { evolution: "Evolution API", meta_cloud: "Cloud API · Meta", generic: "Gateway", sandbox: "Sandbox" };
 const STATUS = { connected: ["Live", "ok"], pending: ["Waiting for scan", "warn"], expired: ["Session expired", "err"],
@@ -212,7 +214,8 @@ async function simulate() {
 }
 
 async function remove(c) {
-  if (!confirm(`Remove ${c.name}? Its chats will be deleted.`)) return;
+  const unlink = c.provider === "evolution" ? " The phone is also logged out of this link." : "";
+  if (!(await ask(`Remove ${c.name}? All its chats are deleted.${unlink}`, { title: "Remove number", ok: "Remove", danger: true }))) return;
   try { await del(`/whatsapp/connections/${c.id}`); info.value = null; await load(); signals.numbers++; } catch (e) { fail(e); }
 }
 

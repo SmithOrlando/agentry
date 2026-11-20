@@ -101,7 +101,7 @@ import AppIcon from "../components/AppIcon.vue";
 import AppDialog from "../components/AppDialog.vue";
 import { api, del, get, patch, post } from "../api.js";
 import { can } from "../session.js";
-import { ago, fail, fileSize, toast } from "../utils.js";
+import { ask, ago, fail, fileSize, toast } from "../utils.js";
 
 const TYPE_COLOR = { pdf: "#E5484D", docx: "#1F6FEB", xlsx: "#0E9F6E", csv: "#0E9F6E", md: "#7C5CFF", txt: "#5B6573", url: "#0EA5E9", qa: "#E8590C" };
 const agents = ref([]);
@@ -170,7 +170,7 @@ async function reindex() {
   try { await post(`/knowledge/files/${managing.value.id}/reindex`); managing.value = null; load(); } catch (e) { fail(e); }
 }
 async function removeFile() {
-  if (!confirm(`Delete ${managing.value.filename}?`)) return;
+  if (!(await ask(`Delete ${managing.value.filename}? Agents will stop using it.`, { ok: "Delete", danger: true }))) return;
   try { await del(`/knowledge/files/${managing.value.id}`); managing.value = null; load(); } catch (e) { fail(e); }
 }
 

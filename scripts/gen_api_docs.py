@@ -162,7 +162,7 @@ SPEC = [
          params=[F("fid", I, True, "File id")], returns="`{ok: true}`", errors=["404 unknown file"]),
     # ------------------------------------------------------------------ whatsapp
     dict(group="WhatsApp numbers", method="GET", path="/api/whatsapp/connections", role="viewer", summary="All connected numbers (no secrets).",
-         returns="`connections[]` {id, name, provider, phone_number, status: pending|connected|disconnected|expired|error, status_detail, default_agent_id, default_mode, webhook_url, last_event_at, last_message_at, created_at}"),
+         returns="`connections[]` {id, name, provider, phone_number, account_name, profile_picture, status: pending|connected|disconnected|expired|error, status_detail, default_agent_id, default_mode, webhook_url, last_event_at, last_message_at, created_at}"),
     dict(group="WhatsApp numbers", method="POST", path="/api/whatsapp/connections", role="admin",
          summary="Add a number. For Evolution API this also creates the instance, registers our webhook and returns the first QR code.",
          body=[F("name", S, False, "Label, e.g. \"Support line\""),
@@ -177,7 +177,7 @@ SPEC = [
                F("default_mode", S, False, "`auto` · `draft` · `off` · null")],
          returns="`connection`", errors=["404 unknown connection"]),
     dict(group="WhatsApp numbers", method="DELETE", path="/api/whatsapp/connections/{cid}", role="admin",
-         summary="Remove a number and all its chats. (The Evolution instance stays on the Evolution server.)",
+         summary="Remove a number and all its chats. For Evolution it also logs the phone out and deletes the instance on the Evolution server (best effort).",
          params=[F("cid", I, True, "Connection id")], returns="`{ok: true}`", errors=["404 unknown connection"]),
     dict(group="WhatsApp numbers", method="GET", path="/api/whatsapp/connections/{cid}/qr", role="admin", summary="Current QR code to link an Evolution number.",
          params=[F("cid", I, True, "Connection id")], returns="`{qr: \"data:image/png;base64,…\" | null, pairing_code}`; `qr` is null when already linked",
@@ -196,7 +196,7 @@ SPEC = [
     dict(group="Inbox", method="GET", path="/api/inbox/chats", role="viewer", summary="Chat list for the Inbox (max 200, most recent first).",
          query=[F("filter", S, False, "`all` (default) · `drafts` · `needs_you` · `unassigned`"),
                 F("q", S, False, "Search name, phone or last message"), F("connection_id", I, False, "Only this number")],
-         returns="`chats[]` {id, mode, agent_id, agent_name, agent_color, handoff_active, unread_count, drafts, last_message_at, last_message_preview, connection_id, connection_name, contact_name, wa_id}, `counts` {all_, drafts, needs_you}"),
+         returns="`chats[]` {id, mode, agent_id, agent_name, agent_color, handoff_active, unread_count, drafts, last_message_at, last_message_preview, connection_id, connection_name, contact_name, wa_id}, `counts` {all_, drafts, needs_you, unread (chats with unread messages)}"),
     dict(group="Inbox", method="GET", path="/api/inbox/chats/{cid}", role="viewer", summary="One chat: details, messages and stats. Marks it read.",
          params=[F("cid", I, True, "Chat id")], query=[F("mark_read", S, False, "`0` to leave unread_count unchanged (default `1`)")],
          returns="`chat` {…, rules{handoff, business_hours_only, match_language}, tags[], opted_out, contact_since}, `messages[]` {id, direction: in|out|system, author: customer|agent|human|system, text, status: received|draft|sent|failed|note, sources[], error, agent_name, user_name, created_at}, `stats` {agent_replies, drafts_approved, first_message}",
@@ -208,6 +208,9 @@ SPEC = [
                F("tags", A(S), False, "Replace the contact's tags (max 20)"),
                F("apply_to_connection", B, False, "Also make agent/mode the number's defaults and apply them to all its chats")],
          returns="`{ok: true}`", errors=["400 unknown agent", "404 unknown chat"]),
+    dict(group="Inbox", method="DELETE", path="/api/inbox/chats/{cid}", role="supervisor",
+         summary="Delete a chat and all its messages. The contact is removed too when it has no other chats.",
+         params=[F("cid", I, True, "Chat id")], returns="`{ok: true}`", errors=["404 unknown chat"]),
     dict(group="Inbox", method="POST", path="/api/inbox/chats/{cid}/messages", role="supervisor",
          summary="Send a message as yourself. Pauses the agent (sets handoff).", params=[F("cid", I, True, "Chat id")],
          body=[F("text", S, True, "Message")], returns="`{id}` (201): message status is `sent` or `failed`", errors=["400 empty", "404 unknown chat"]),
@@ -408,6 +411,10 @@ def capture():
     call("POST", "/api/inbox/chats/{cid}/takeover", f"/api/inbox/chats/{chat_id}/takeover")
     call("POST", "/api/inbox/chats/{cid}/messages", f"/api/inbox/chats/{chat_id}/messages", {"text": "Hi, this is Ana from the team."})
     call("POST", "/api/inbox/chats/{cid}/resume", f"/api/inbox/chats/{chat_id}/resume")
+    _, chats2 = call("GET", "/api/inbox/chats", "/api/inbox/chats", record=False)
+    other = next((ch["id"] for ch in chats2["chats"] if ch["id"] != chat_id), None)
+    if other:
+        call("DELETE", "/api/inbox/chats/{cid}", f"/api/inbox/chats/{other}")
     # playground
     _, ps = call("POST", "/api/playground/sessions", "/api/playground/sessions", {"agent_id": cs})
     call("POST", "/api/playground/sessions/{sid}/messages", f"/api/playground/sessions/{ps['id']}/messages",

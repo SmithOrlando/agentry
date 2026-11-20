@@ -116,3 +116,15 @@
   treated as phone numbers, which made every reply fail with `exists:false`. Agentry now uses the real
   number when Evolution provides it (`senderPn` / `remoteJidAlt`), and otherwise replies to the LID JID
   itself. The Inbox shows "Private number" for such contacts.
+
+## 1.5.0 (2026-11-20)
+- **Inbox badge clears when you read.** It now counts chats with unread messages plus drafts waiting for
+  approval (it used to count "Needs you" chats, which stayed after reading). `counts.unread` added to `GET /api/inbox/chats`.
+- **Delete a chat:** button in the chat's details panel; `DELETE /api/inbox/chats/<id>`. Messages go, and so does
+  the contact when it has no other chats.
+- **Removing a number** is a visible **Remove** button on each card (not only inside Details). For Evolution it
+  also logs the phone out and deletes the instance on the Evolution server (best effort).
+- **Linked numbers show their account:** phone number and WhatsApp profile name, from Evolution's
+  `connection.update` event or `fetchInstances` on refresh. Migration `002_number_profile.sql` adds
+  `account_name` and `profile_picture`.
+- All "Are you sure?" prompts use an in-app dialog instead of the browser's `confirm()`, which can be blocked silently.

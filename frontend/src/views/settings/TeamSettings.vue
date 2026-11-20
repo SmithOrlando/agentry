@@ -53,7 +53,7 @@ import AppIcon from "../../components/AppIcon.vue";
 import SettingsGroup from "../../components/SettingsGroup.vue";
 import { del, get, patch, post } from "../../api.js";
 import { can } from "../../session.js";
-import { ago, colorFor, copy, fail, initials, toast } from "../../utils.js";
+import { ask, ago, colorFor, copy, fail, initials, toast } from "../../utils.js";
 
 const ROLES = [["Owner", "Everything, including deleting the workspace."], ["Admin", "Manage agents, numbers, API keys, settings and team."],
   ["Supervisor", "Work the inbox, approve drafts, upload knowledge, use the Playground."], ["Viewer", "Read chats, files and settings only."]];
@@ -75,7 +75,7 @@ async function setRole(m, r) {
   try { await patch(`/team/members/${m.id}`, { role: r }); toast("Role updated"); load(); } catch (e) { fail(e); }
 }
 async function removeMember(m) {
-  if (!confirm(`Remove ${m.name}?`)) return;
+  if (!(await ask(`Remove ${m.name} from the workspace?`, { ok: "Remove", danger: true }))) return;
   try { await del(`/team/members/${m.id}`); load(); } catch (e) { fail(e); }
 }
 async function revoke(i) {

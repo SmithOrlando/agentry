@@ -87,7 +87,7 @@ import ToggleSwitch from "../../components/ToggleSwitch.vue";
 import { useSettingsForm } from "../../composables/useSettingsForm.js";
 import { del, get, patch, post, put } from "../../api.js";
 import { can } from "../../session.js";
-import { ago, fail, signals, toast } from "../../utils.js";
+import { ask, ago, fail, signals, toast } from "../../utils.js";
 
 const COLORS = { openai: "#10A37F", anthropic: "#D97757", gemini: "#4285F4", deepseek: "#4D6BFE", qwen: "#7C5CFF", openai_compatible: "#5B6573" };
 const admin = computed(() => can("admin"));
@@ -154,7 +154,7 @@ async function test(id) {
   } catch (e) { testResult.text = e.message; testResult.color = "var(--err)"; }
 }
 async function removeKey(id) {
-  if (!confirm("Remove this key?")) return;
+  if (!(await ask("Remove this API key? Agents using it stop answering until another model is set.", { ok: "Remove", danger: true }))) return;
   try { await del(`/settings/providers/${id}`); openPanel.value = null; await reload(); signals.setup++; } catch (e) { fail(e); }
 }
 </script>

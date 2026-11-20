@@ -45,6 +45,9 @@ class Inbound:
 class ConnectionUpdate:
     status: str             # connected | disconnected | pending
     detail: str = ""
+    phone: str = ""         # linked account's number, digits only (when the provider says)
+    account: str = ""       # linked account's WhatsApp profile name
+    picture: str = ""       # profile picture URL
 
 
 def digits(jid_or_phone: str) -> str:
@@ -104,6 +107,13 @@ class Adapter:
     def state(self) -> str:
         return "connected"
 
+    def profile(self) -> dict:
+        """Linked account details {phone, account, picture}; empty when the provider can't tell."""
+        return {}
+
+    def teardown(self) -> None:
+        """Called when the number is removed from Agentry (e.g. unlink the phone). Best effort."""
+
     def send_text(self, to: str, text: str) -> str:
         raise NotImplementedError
 
@@ -149,6 +159,27 @@ class EvolutionAdapter(Adapter):
         st = ((data.get("instance") or {}).get("state") or data.get("state") or "").lower()
         return {"open": "connected", "connecting": "pending"}.get(st, "disconnected")
 
+    def profile(self):
+        data = self._req("GET", self._u("/instance/fetchInstances"), headers=self._h(),
+                         params={"instanceName": self.config["instance"]})
+        items = data if isinstance(data, list) else [data]
+        for it in items:
+            it = it.get("instance", it) if isinstance(it, dict) else {}
+            if it.get("name", it.get("instanceName")) not in (None, self.config["instance"]):
+                continue
+            owner = it.get("ownerJid") or it.get("owner") or it.get("number") or ""
+            return {"phone": digits(owner), "account": it.get("profileName") or "",
+                    "picture": it.get("profilePicUrl") or it.get("profilePictureUrl") or ""}
+        return {}
+
+    def teardown(self):
+        inst = self.config["instance"]
+        for path in (f"/instance/logout/{inst}", f"/instance/delete/{inst}"):
+            try:
+                self._req("DELETE", self._u(path), headers=self._h())
+            except WhatsAppError as exc:
+                log.info("evolution teardown %s: %s", path, exc)
+
     def send_text(self, to, text):
         data = self._req("POST", self._u(f"/message/sendText/{self.config['instance']}"), headers=self._h(),
                          json={"number": send_target(to), "text": text})
@@ -183,8 +214,10 @@ class EvolutionAdapter(Adapter):
             return out
         if event == "connection.update":
             st = str(data.get("state", "")).lower()
-            return [ConnectionUpdate({"open": "connected", "connecting": "pending"}.get(st, "disconnected"),
-                                     data.get("statusReason", "") and f"reason {data.get('statusReason')}")]
+            status = {"open": "connected", "connecting": "pending"}.get(st, "disconnected")
+            detail = "" if status == "connected" else (data.get("statusReason", "") and f"reason {data.get('statusReason')}")
+            return [ConnectionUpdate(status, detail, digits(data.get("wuid") or ""),
+                                     data.get("profileName") or "", data.get("profilePictureUrl") or "")]
         if event == "qrcode.updated":
             return [ConnectionUpdate("pending", "new QR code available")]
         return []

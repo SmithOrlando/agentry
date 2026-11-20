@@ -6,7 +6,7 @@
 //   );
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from "vue";
 import { onBeforeRouteLeave } from "vue-router";
-import { fail, toast } from "../utils.js";
+import { ask, fail, toast } from "../utils.js";
 
 export function useSettingsForm(loadFn, saveFn) {
   const form = reactive({});
@@ -41,7 +41,7 @@ export function useSettingsForm(loadFn, saveFn) {
   }
 
   // Warn before leaving with unsaved edits (in-app navigation and tab close).
-  onBeforeRouteLeave(() => (dirty.value ? confirm("You have unsaved changes. Leave anyway?") : true));
+  onBeforeRouteLeave(() => (dirty.value ? ask("You have unsaved changes. Leave anyway?", { title: "Unsaved changes", ok: "Leave", danger: true }) : true));
   const beforeUnload = (e) => { if (dirty.value) e.preventDefault(); };
   onMounted(() => { window.addEventListener("beforeunload", beforeUnload); load(); });
   onBeforeUnmount(() => window.removeEventListener("beforeunload", beforeUnload));

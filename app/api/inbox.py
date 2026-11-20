@@ -1,9 +1,10 @@
 from flask import g, jsonify, request
 
-from ..db import jdump, jload, query, query_one, update
+from ..db import execute, jdump, jload, query, query_one, update
 from ..security import role_required
 from ..services import conversations as conv
 from ..services.conversations import DEFAULT_RULES
+from ..services.settings import audit
 from . import body, bp, err, ws
 
 
@@ -37,8 +38,9 @@ def chats():
                        "(SELECT COUNT(*) FROM chats WHERE workspace_id = ?) AS all_, "
                        "(SELECT COUNT(DISTINCT c.id) FROM chats c JOIN messages m ON m.chat_id = c.id "
                        " WHERE c.workspace_id = ? AND m.status = 'draft') AS drafts, "
-                       "(SELECT COUNT(*) FROM chats WHERE workspace_id = ? AND handoff_active = 1) AS needs_you",
-                       [ws(), ws(), ws()])
+                       "(SELECT COUNT(*) FROM chats WHERE workspace_id = ? AND handoff_active = 1) AS needs_you, "
+                       "(SELECT COUNT(*) FROM chats WHERE workspace_id = ? AND unread_count > 0) AS unread",
+                       [ws(), ws(), ws(), ws()])
     return jsonify(chats=rows, counts=counts)
 
 
@@ -160,3 +162,17 @@ def draft_approve(mid):
 def draft_discard(mid):
     r = _guard(conv.discard_draft, ws(), mid)
     return r if isinstance(r, tuple) else jsonify(ok=True)
+
+
+@bp.delete("/inbox/chats/<int:cid>")
+@role_required("supervisor")
+def delete_chat(cid):
+    """Delete a chat and its messages. The contact goes too if it has no other chats."""
+    c = query_one("SELECT id, contact_id FROM chats WHERE id = ? AND workspace_id = ?", [cid, ws()])
+    if not c:
+        return err("not found", 404)
+    execute("DELETE FROM chats WHERE id = ?", [cid])
+    execute("DELETE FROM contacts WHERE id = ? AND NOT EXISTS (SELECT 1 FROM chats WHERE contact_id = ?)",
+            [c["contact_id"], c["contact_id"]])
+    audit(ws(), g.user["id"], "deleted chat", str(cid))
+    return jsonify(ok=True)

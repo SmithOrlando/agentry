@@ -36,7 +36,7 @@ curl -b jar -H "X-CSRF-Token: $TOKEN" -H 'Content-Type: application/json' -d '{"
 - **Agents**: [`GET /api/agents`](#get-api-agents) · [`POST /api/agents`](#post-api-agents) · [`PATCH /api/agents/{aid}`](#patch-api-agents-aid) · [`DELETE /api/agents/{aid}`](#delete-api-agents-aid)
 - **Knowledge**: [`GET /api/knowledge/files`](#get-api-knowledge-files) · [`POST /api/knowledge/files`](#post-api-knowledge-files) · [`POST /api/knowledge/text`](#post-api-knowledge-text) · [`POST /api/knowledge/url`](#post-api-knowledge-url) · [`PATCH /api/knowledge/files/{fid}`](#patch-api-knowledge-files-fid) · [`POST /api/knowledge/files/{fid}/reindex`](#post-api-knowledge-files-fid-reindex) · [`DELETE /api/knowledge/files/{fid}`](#delete-api-knowledge-files-fid)
 - **WhatsApp numbers**: [`GET /api/whatsapp/connections`](#get-api-whatsapp-connections) · [`POST /api/whatsapp/connections`](#post-api-whatsapp-connections) · [`PATCH /api/whatsapp/connections/{cid}`](#patch-api-whatsapp-connections-cid) · [`DELETE /api/whatsapp/connections/{cid}`](#delete-api-whatsapp-connections-cid) · [`GET /api/whatsapp/connections/{cid}/qr`](#get-api-whatsapp-connections-cid-qr) · [`POST /api/whatsapp/connections/{cid}/refresh`](#post-api-whatsapp-connections-cid-refresh) · [`POST /api/whatsapp/connections/{cid}/simulate`](#post-api-whatsapp-connections-cid-simulate)
-- **Inbox**: [`GET /api/inbox/chats`](#get-api-inbox-chats) · [`GET /api/inbox/chats/{cid}`](#get-api-inbox-chats-cid) · [`PATCH /api/inbox/chats/{cid}`](#patch-api-inbox-chats-cid) · [`POST /api/inbox/chats/{cid}/messages`](#post-api-inbox-chats-cid-messages) · [`POST /api/inbox/chats/{cid}/takeover`](#post-api-inbox-chats-cid-takeover) · [`POST /api/inbox/chats/{cid}/resume`](#post-api-inbox-chats-cid-resume) · [`POST /api/inbox/chats/{cid}/ask-agent`](#post-api-inbox-chats-cid-ask-agent) · [`POST /api/inbox/messages/{mid}/approve`](#post-api-inbox-messages-mid-approve) · [`POST /api/inbox/messages/{mid}/discard`](#post-api-inbox-messages-mid-discard)
+- **Inbox**: [`GET /api/inbox/chats`](#get-api-inbox-chats) · [`GET /api/inbox/chats/{cid}`](#get-api-inbox-chats-cid) · [`PATCH /api/inbox/chats/{cid}`](#patch-api-inbox-chats-cid) · [`DELETE /api/inbox/chats/{cid}`](#delete-api-inbox-chats-cid) · [`POST /api/inbox/chats/{cid}/messages`](#post-api-inbox-chats-cid-messages) · [`POST /api/inbox/chats/{cid}/takeover`](#post-api-inbox-chats-cid-takeover) · [`POST /api/inbox/chats/{cid}/resume`](#post-api-inbox-chats-cid-resume) · [`POST /api/inbox/chats/{cid}/ask-agent`](#post-api-inbox-chats-cid-ask-agent) · [`POST /api/inbox/messages/{mid}/approve`](#post-api-inbox-messages-mid-approve) · [`POST /api/inbox/messages/{mid}/discard`](#post-api-inbox-messages-mid-discard)
 - **Settings**: [`GET /api/settings/general`](#get-api-settings-general) · [`PATCH /api/settings/general`](#patch-api-settings-general) · [`DELETE /api/settings/workspace`](#delete-api-settings-workspace) · [`GET /api/settings/llm`](#get-api-settings-llm) · [`PATCH /api/settings/llm`](#patch-api-settings-llm) · [`PUT /api/settings/providers/{provider}`](#put-api-settings-providers-provider) · [`DELETE /api/settings/providers/{provider}`](#delete-api-settings-providers-provider) · [`POST /api/settings/providers/{provider}/test`](#post-api-settings-providers-provider-test) · [`GET /api/settings/whatsapp`](#get-api-settings-whatsapp) · [`PATCH /api/settings/whatsapp`](#patch-api-settings-whatsapp) · [`GET /api/settings/agent-defaults`](#get-api-settings-agent-defaults) · [`PATCH /api/settings/agent-defaults`](#patch-api-settings-agent-defaults) · [`GET /api/settings/security`](#get-api-settings-security) · [`PATCH /api/settings/security`](#patch-api-settings-security)
 - **Team**: [`GET /api/team`](#get-api-team) · [`POST /api/team/invites`](#post-api-team-invites) · [`DELETE /api/team/invites/{iid}`](#delete-api-team-invites-iid) · [`PATCH /api/team/members/{uid}`](#patch-api-team-members-uid) · [`DELETE /api/team/members/{uid}`](#delete-api-team-members-uid)
 - **Usage & audit**: [`GET /api/usage`](#get-api-usage) · [`GET /api/audit`](#get-api-audit) · [`GET /api/export`](#get-api-export)
@@ -209,7 +209,7 @@ Example response `200`:
 
 ```json
 {
-  "csrf": "0WV8w5r9w-5ljAh-FNMGRF8IIq4UxLH6XNt_Fl-8Cz0",
+  "csrf": "wyz5x5gAM7kw026mUHtxfHxHrF4DYJT_7GXNoaNmD3w",
   "setup": {
     "model_ready": false,
     "real_whatsapp": false,
@@ -256,7 +256,7 @@ Example response `200`:
       "agent_id": 1,
       "id": 1,
       "title": "What is the return policy for sale items?",
-      "updated_at": "2026-11-20T08:15:04Z"
+      "updated_at": "2026-11-20T10:20:31Z"
     }
   ]
 }
@@ -325,7 +325,7 @@ Example response `200`:
 {
   "messages": [
     {
-      "created_at": "2026-11-20T08:15:04Z",
+      "created_at": "2026-11-20T10:20:31Z",
       "id": 1,
       "meta": {},
       "role": "user",
@@ -333,7 +333,7 @@ Example response `200`:
       "text": "What is the return policy for sale items?"
     },
     {
-      "created_at": "2026-11-20T08:15:04Z",
+      "created_at": "2026-11-20T10:20:31Z",
       "id": 2,
       "meta": {
         "agent": "Customer Service",
@@ -351,10 +351,10 @@ Example response `200`:
   ],
   "session": {
     "agent_id": 1,
-    "created_at": "2026-11-20T08:15:04Z",
+    "created_at": "2026-11-20T10:20:31Z",
     "id": 1,
     "title": "What is the return policy for sale items?",
-    "updated_at": "2026-11-20T08:15:04Z",
+    "updated_at": "2026-11-20T10:20:31Z",
     "user_id": 1,
     "workspace_id": 1
   }
@@ -482,14 +482,14 @@ Example response `200`:
       "active_model": "Platform default",
       "chat_count": 0,
       "color": "#1F6FEB",
-      "created_at": "2026-11-20T08:15:04Z",
+      "created_at": "2026-11-20T10:20:30Z",
       "description": "Orders, returns, FAQs",
       "file_count": 0,
       "id": 1,
       "instructions": "You are the customer service agent for {business}. Be warm and brief — two or three sentences. Only answer from the knowledge sources. If…",
       "model_override": null,
       "name": "Customer Service",
-      "updated_at": "2026-11-20T08:15:04Z",
+      "updated_at": "2026-11-20T10:20:30Z",
       "workspace_id": 1
     },
     {
@@ -497,14 +497,14 @@ Example response `200`:
       "active_model": "Platform default",
       "chat_count": 0,
       "color": "#E8590C",
-      "created_at": "2026-11-20T08:15:04Z",
+      "created_at": "2026-11-20T10:20:30Z",
       "description": "Tasks, deadlines, follow-ups",
       "file_count": 0,
       "id": 2,
       "instructions": "You coordinate projects for {business}. Confirm dates, owners and next steps clearly. Never promise a date that is not in the sources.",
       "model_override": null,
       "name": "Project Manager",
-      "updated_at": "2026-11-20T08:15:04Z",
+      "updated_at": "2026-11-20T10:20:30Z",
       "workspace_id": 1
     },
     "… 2 more"
@@ -675,7 +675,7 @@ Example response `200`:
         }
       ],
       "chunk_count": 0,
-      "created_at": "2026-11-20T08:15:04Z",
+      "created_at": "2026-11-20T10:20:31Z",
       "error": "That address is not allowed",
       "filename": "http://127.0.0.1/internal",
       "id": 3,
@@ -683,7 +683,7 @@ Example response `200`:
       "size_bytes": 0,
       "source_url": "http://127.0.0.1/internal",
       "status": "failed",
-      "updated_at": "2026-11-20T08:15:04Z"
+      "updated_at": "2026-11-20T10:20:31Z"
     },
     {
       "agents": [
@@ -693,7 +693,7 @@ Example response `200`:
         }
       ],
       "chunk_count": 1,
-      "created_at": "2026-11-20T08:15:04Z",
+      "created_at": "2026-11-20T10:20:31Z",
       "error": null,
       "filename": "shipping.txt",
       "id": 2,
@@ -701,7 +701,7 @@ Example response `200`:
       "size_bytes": 43,
       "source_url": null,
       "status": "ready",
-      "updated_at": "2026-11-20T08:15:04Z"
+      "updated_at": "2026-11-20T10:20:31Z"
     },
     "… 1 more"
   ],
@@ -953,7 +953,7 @@ All connected numbers (no secrets).
 
 **Role:** viewer
 
-**Returns:** `connections[]` {id, name, provider, phone_number, status: pending|connected|disconnected|expired|error, status_detail, default_agent_id, default_mode, webhook_url, last_event_at, last_message_at, created_at}
+**Returns:** `connections[]` {id, name, provider, phone_number, account_name, profile_picture, status: pending|connected|disconnected|expired|error, status_detail, default_agent_id, default_mode, webhook_url, last_event_at, last_message_at, created_at}
 
 Example request:
 
@@ -967,18 +967,20 @@ Example response `200`:
 {
   "connections": [
     {
-      "created_at": "2026-11-20T08:15:04Z",
+      "account_name": "",
+      "created_at": "2026-11-20T10:20:31Z",
       "default_agent_id": 1,
       "default_mode": "draft",
       "id": 1,
-      "last_event_at": "2026-11-20T08:15:04Z",
-      "last_message_at": "2026-11-20T08:15:04Z",
+      "last_event_at": "2026-11-20T10:20:31Z",
+      "last_message_at": "2026-11-20T10:20:31Z",
       "name": "Support line",
       "phone_number": "+57 300 000 4821",
+      "profile_picture": "",
       "provider": "sandbox",
       "status": "connected",
       "status_detail": "",
-      "webhook_url": "https://agents.example.com/webhooks/sandbox/1/_SQWpvK--NeTN4HVWlItjUoRwmCYmmGI"
+      "webhook_url": "https://agents.example.com/webhooks/sandbox/1/Ou2HE_XmlzyqSsAPUlxATMmcoc9UgZEO"
     }
   ]
 }
@@ -1022,17 +1024,19 @@ Example response `201`:
 ```json
 {
   "connection": {
-    "created_at": "2026-11-20T08:15:04Z",
+    "account_name": "",
+    "created_at": "2026-11-20T10:20:31Z",
     "default_agent_id": null,
     "default_mode": null,
     "id": 1,
     "last_event_at": null,
     "name": "Support line",
     "phone_number": "+57 300 000 4821",
+    "profile_picture": "",
     "provider": "sandbox",
     "status": "connected",
     "status_detail": "",
-    "webhook_url": "https://agents.example.com/webhooks/sandbox/1/_SQWpvK--NeTN4HVWlItjUoRwmCYmmGI"
+    "webhook_url": "https://agents.example.com/webhooks/sandbox/1/Ou2HE_XmlzyqSsAPUlxATMmcoc9UgZEO"
   }
 }
 ```
@@ -1081,17 +1085,19 @@ Example response `200`:
 ```json
 {
   "connection": {
-    "created_at": "2026-11-20T08:15:04Z",
+    "account_name": "",
+    "created_at": "2026-11-20T10:20:31Z",
     "default_agent_id": 1,
     "default_mode": "draft",
     "id": 1,
     "last_event_at": null,
     "name": "Support line",
     "phone_number": "+57 300 000 4821",
+    "profile_picture": "",
     "provider": "sandbox",
     "status": "connected",
     "status_detail": "",
-    "webhook_url": "https://agents.example.com/webhooks/sandbox/1/_SQWpvK--NeTN4HVWlItjUoRwmCYmmGI"
+    "webhook_url": "https://agents.example.com/webhooks/sandbox/1/Ou2HE_XmlzyqSsAPUlxATMmcoc9UgZEO"
   }
 }
 ```
@@ -1102,7 +1108,7 @@ Example response `200`:
 
 ### `DELETE /api/whatsapp/connections/{cid}`
 
-Remove a number and all its chats. (The Evolution instance stays on the Evolution server.)
+Remove a number and all its chats. For Evolution it also logs the phone out and deletes the instance on the Evolution server (best effort).
 
 **Role:** admin · **CSRF header:** required
 
@@ -1184,17 +1190,19 @@ Example response `200`:
 ```json
 {
   "connection": {
-    "created_at": "2026-11-20T08:15:04Z",
+    "account_name": "",
+    "created_at": "2026-11-20T10:20:31Z",
     "default_agent_id": 1,
     "default_mode": "draft",
     "id": 1,
     "last_event_at": null,
     "name": "Support line",
     "phone_number": "+57 300 000 4821",
+    "profile_picture": "",
     "provider": "sandbox",
     "status": "connected",
     "status_detail": "",
-    "webhook_url": "https://agents.example.com/webhooks/sandbox/1/_SQWpvK--NeTN4HVWlItjUoRwmCYmmGI"
+    "webhook_url": "https://agents.example.com/webhooks/sandbox/1/Ou2HE_XmlzyqSsAPUlxATMmcoc9UgZEO"
   }
 }
 ```
@@ -1266,7 +1274,7 @@ Chat list for the Inbox (max 200, most recent first).
 | `q` | string | no | Search name, phone or last message |
 | `connection_id` | integer | no | Only this number |
 
-**Returns:** `chats[]` {id, mode, agent_id, agent_name, agent_color, handoff_active, unread_count, drafts, last_message_at, last_message_preview, connection_id, connection_name, contact_name, wa_id}, `counts` {all_, drafts, needs_you}
+**Returns:** `chats[]` {id, mode, agent_id, agent_name, agent_color, handoff_active, unread_count, drafts, last_message_at, last_message_preview, connection_id, connection_name, contact_name, wa_id}, `counts` {all_, drafts, needs_you, unread (chats with unread messages)}
 
 Example request:
 
@@ -1289,7 +1297,7 @@ Example response `200`:
       "drafts": 0,
       "handoff_active": 0,
       "id": 2,
-      "last_message_at": "2026-11-20T08:15:04Z",
+      "last_message_at": "2026-11-20T10:20:31Z",
       "last_message_preview": "Hola",
       "mode": "draft",
       "unread_count": 1,
@@ -1305,7 +1313,7 @@ Example response `200`:
       "drafts": 2,
       "handoff_active": 0,
       "id": 1,
-      "last_message_at": "2026-11-20T08:15:04Z",
+      "last_message_at": "2026-11-20T10:20:31Z",
       "last_message_preview": "And shipping to Bogota?",
       "mode": "draft",
       "unread_count": 2,
@@ -1315,7 +1323,8 @@ Example response `200`:
   "counts": {
     "all_": 2,
     "drafts": 1,
-    "needs_you": 0
+    "needs_you": 0,
+    "unread": 2
   }
 }
 ```
@@ -1358,12 +1367,12 @@ Example response `200`:
     "connection_name": "Support line",
     "contact_id": 1,
     "contact_name": "Maria López",
-    "contact_since": "2026-11-20T08:15:04Z",
-    "created_at": "2026-11-20T08:15:04Z",
+    "contact_since": "2026-11-20T10:20:31Z",
+    "created_at": "2026-11-20T10:20:31Z",
     "handoff_active": 0,
     "id": 1,
     "last_away_sent_at": null,
-    "last_message_at": "2026-11-20T08:15:04Z",
+    "last_message_at": "2026-11-20T10:20:31Z",
     "last_message_preview": "And shipping to Bogota?",
     "mode": "draft",
     "opted_out": 0,
@@ -1381,7 +1390,7 @@ Example response `200`:
     {
       "agent_name": null,
       "author": "customer",
-      "created_at": "2026-11-20T08:15:04Z",
+      "created_at": "2026-11-20T10:20:31Z",
       "direction": "in",
       "error": null,
       "id": 1,
@@ -1393,7 +1402,7 @@ Example response `200`:
     {
       "agent_name": "Customer Service",
       "author": "agent",
-      "created_at": "2026-11-20T08:15:04Z",
+      "created_at": "2026-11-20T10:20:31Z",
       "direction": "out",
       "error": null,
       "id": 2,
@@ -1412,7 +1421,7 @@ Example response `200`:
   "stats": {
     "agent_replies": 0,
     "drafts_approved": 0,
-    "first_message": "2026-11-20T08:15:04Z"
+    "first_message": "2026-11-20T10:20:31Z"
   }
 }
 ```
@@ -1471,6 +1480,38 @@ Example response `200`:
 ```
 
 **Errors:** `400` unknown agent · `404` unknown chat
+
+---
+
+### `DELETE /api/inbox/chats/{cid}`
+
+Delete a chat and all its messages. The contact is removed too when it has no other chats.
+
+**Role:** supervisor · **CSRF header:** required
+
+**Path parameters**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `cid` | integer | yes | Chat id |
+
+**Returns:** `{ok: true}`
+
+Example request:
+
+```http
+DELETE /api/inbox/chats/2
+```
+
+Example response `200`:
+
+```json
+{
+  "ok": true
+}
+```
+
+**Errors:** `404` unknown chat
 
 ---
 
@@ -1652,7 +1693,7 @@ Example response `200`:
     "agent_id": 1,
     "author": "agent",
     "chat_id": 1,
-    "created_at": "2026-11-20T08:15:04Z",
+    "created_at": "2026-11-20T10:20:31Z",
     "direction": "out",
     "error": null,
     "id": 2,
@@ -2318,13 +2359,13 @@ Example response `200`:
 {
   "invites": [
     {
-      "created_at": "2026-11-20T08:15:04Z",
+      "created_at": "2026-11-20T10:20:31Z",
       "email": "lee@example.com",
       "id": 2,
       "role": "supervisor"
     },
     {
-      "created_at": "2026-11-20T08:15:04Z",
+      "created_at": "2026-11-20T10:20:31Z",
       "email": "sam@example.com",
       "id": 1,
       "role": "supervisor"
@@ -2335,7 +2376,7 @@ Example response `200`:
     {
       "email": "owner@example.com",
       "id": 1,
-      "last_active_at": "2026-11-20T08:15:04Z",
+      "last_active_at": "2026-11-20T10:20:30Z",
       "name": "Ana Owner",
       "role": "owner"
     }
@@ -2379,11 +2420,11 @@ Example response `201`:
   "invites": [
     {
       "email": "sam@example.com",
-      "link": "https://agents.example.com/register?invite=lenFPPJDZKfwqvFSH2suudjbAJ2sqrBK"
+      "link": "https://agents.example.com/register?invite=40LAVI5pmpSDAAkOpLkL3bJps_tXjqS-"
     },
     {
       "email": "lee@example.com",
-      "link": "https://agents.example.com/register?invite=wV5mVUckO3dSl6wT89bh3NLoQQ59AbpH"
+      "link": "https://agents.example.com/register?invite=6sJQ-vuhg-q8iFBWMgx61NQ-LrTItHd4"
     }
   ]
 }
@@ -2550,17 +2591,17 @@ Example response `200`:
   "entries": [
     {
       "action": "changed password",
-      "created_at": "2026-11-20T08:15:05Z",
+      "created_at": "2026-11-20T10:20:31Z",
       "target": "",
       "user_name": "Ana Owner"
     },
     {
       "action": "removed member",
-      "created_at": "2026-11-20T08:15:04Z",
+      "created_at": "2026-11-20T10:20:31Z",
       "target": "sam@example.com",
       "user_name": "Ana Owner"
     },
-    "… 18 more"
+    "… 19 more"
   ]
 }
 ```
@@ -2603,19 +2644,19 @@ Example response `200`:
   "chats": [
     {
       "agent_id": 1,
-      "created_at": "2026-11-20T08:15:04Z",
+      "created_at": "2026-11-20T10:20:31Z",
       "id": 1,
       "messages": [
         {
           "author": "customer",
-          "created_at": "2026-11-20T08:15:04Z",
+          "created_at": "2026-11-20T10:20:31Z",
           "direction": "in",
           "status": "received",
           "text": "Can I return sale items?"
         },
         {
           "author": "agent",
-          "created_at": "2026-11-20T08:15:04Z",
+          "created_at": "2026-11-20T10:20:31Z",
           "direction": "out",
           "status": "sent",
           "text": "Hi Maria! Sale items can be returned within 14 days for store credit."
@@ -2625,53 +2666,29 @@ Example response `200`:
       "mode": "auto",
       "name": "Maria López",
       "wa_id": "573001119014"
-    },
-    {
-      "agent_id": null,
-      "created_at": "2026-11-20T08:15:04Z",
-      "id": 2,
-      "messages": [
-        {
-          "author": "customer",
-          "created_at": "2026-11-20T08:15:04Z",
-          "direction": "in",
-          "status": "received",
-          "text": "Hola"
-        }
-      ],
-      "mode": "draft",
-      "name": "Luis",
-      "wa_id": "573005550000"
     }
   ],
   "contacts": [
     {
-      "created_at": "2026-11-20T08:15:04Z",
+      "created_at": "2026-11-20T10:20:31Z",
       "name": "Maria López",
       "opted_out": 0,
       "tags": "[\"Returning\"]",
       "wa_id": "573001119014"
-    },
-    {
-      "created_at": "2026-11-20T08:15:04Z",
-      "name": "Luis",
-      "opted_out": 0,
-      "tags": "[]",
-      "wa_id": "573005550000"
     }
   ],
-  "exported_at": "2026-11-20T08:15:05Z",
+  "exported_at": "2026-11-20T10:20:31Z",
   "knowledge_files": [
     {
       "chunk_count": 1,
-      "created_at": "2026-11-20T08:15:04Z",
+      "created_at": "2026-11-20T10:20:31Z",
       "filename": "Returns FAQ",
       "kind": "qa",
       "status": "ready"
     },
     {
       "chunk_count": 1,
-      "created_at": "2026-11-20T08:15:04Z",
+      "created_at": "2026-11-20T10:20:31Z",
       "filename": "shipping.txt",
       "kind": "txt",
       "status": "ready"
@@ -2711,7 +2728,7 @@ Inbound events from Evolution API, a generic gateway or the sandbox. The URL (wi
 Example request:
 
 ```http
-POST /webhooks/sandbox/1/_SQWpvK--NeTN4HVWlItjUoRwmCYmmGI
+POST /webhooks/sandbox/1/Ou2HE_XmlzyqSsAPUlxATMmcoc9UgZEO
 Content-Type: application/json
 
 {

@@ -24,7 +24,7 @@ def _dispatch(conn, events):
             if handle_inbound(conn, ev):
                 handled += 1
         elif isinstance(ev, ConnectionUpdate):
-            csvc.set_status(conn["id"], ev.status, ev.detail)
+            csvc.set_status(conn["id"], ev.status, ev.detail, ev.phone, ev.account, ev.picture)
     return handled
 
 

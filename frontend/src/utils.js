@@ -46,3 +46,16 @@ export const currentTheme = () => document.documentElement.dataset.theme;
 // adding a WhatsApp number makes the sidebar status card reload.
 // signals.setup++ after changing model settings/keys re-checks the "Finish setup" card.
 export const signals = reactive({ numbers: 0, inbox: 0, setup: 0 });
+
+// ---------- confirmations (in-app dialog; the browser's confirm() can be blocked or look out of place)
+// const ok = await ask("Remove this number?", { ok: "Remove", danger: true });
+export const confirmState = reactive({ open: false, title: "", message: "", ok: "OK", danger: false, resolve: null });
+export function ask(message, { title = "Are you sure?", ok = "OK", danger = false } = {}) {
+  if (confirmState.resolve) confirmState.resolve(false);
+  return new Promise((resolve) => Object.assign(confirmState, { open: true, title, message, ok, danger, resolve }));
+}
+export function answer(value) {
+  const r = confirmState.resolve;
+  Object.assign(confirmState, { open: false, resolve: null });
+  if (r) r(value);
+}

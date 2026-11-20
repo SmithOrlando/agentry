@@ -179,6 +179,7 @@ Every backend call in the Vue code, the function it's made from, and the endpoin
 | `loadChats` | `GET /api/inbox/chats` | [`GET /api/inbox/chats`](API_BACKEND.md#get-api-inbox-chats) |
 | `loadDetail` | `GET /api/inbox/chats/&lt;id&gt;` | [`GET /api/inbox/chats/{cid}`](API_BACKEND.md#get-api-inbox-chats-cid) |
 | `patchChat` | `PATCH /api/inbox/chats/&lt;id&gt;` | [`PATCH /api/inbox/chats/{cid}`](API_BACKEND.md#patch-api-inbox-chats-cid) |
+| `deleteChat` | `DELETE /api/inbox/chats/&lt;id&gt;` | [`DELETE /api/inbox/chats/{cid}`](API_BACKEND.md#delete-api-inbox-chats-cid) |
 | `action` | `POST /api/inbox/chats/&lt;id&gt;/takeover` | [`POST /api/inbox/chats/{cid}/takeover`](API_BACKEND.md#post-api-inbox-chats-cid-takeover) |
 | `action` | `POST /api/inbox/chats/&lt;id&gt;/resume` | [`POST /api/inbox/chats/{cid}/resume`](API_BACKEND.md#post-api-inbox-chats-cid-resume) |
 | `approve` | `POST /api/inbox/messages/&lt;id&gt;/approve` | [`POST /api/inbox/messages/{mid}/approve`](API_BACKEND.md#post-api-inbox-messages-mid-approve) |

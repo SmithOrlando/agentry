@@ -20,8 +20,8 @@ REQUIRED = {
 
 def public(conn: dict) -> dict:
     """Connection as returned by the API: no secrets."""
-    keep = ("id", "name", "provider", "phone_number", "status", "status_detail", "default_agent_id",
-            "default_mode", "last_event_at", "created_at")
+    keep = ("id", "name", "provider", "phone_number", "account_name", "profile_picture", "status", "status_detail",
+            "default_agent_id", "default_mode", "last_event_at", "created_at")
     out = {k: conn[k] for k in keep}
     out["webhook_url"] = webhook_url(conn)
     return out
@@ -83,28 +83,54 @@ def create(workspace_id: int, name: str, provider: str, config: dict, phone_numb
     return public(conn)
 
 
+def save_profile(conn_id: int, phone: str = "", account: str = "", picture: str = "") -> None:
+    """Remember which WhatsApp account is linked (shown on the number's card)."""
+    patch = {}
+    if phone:
+        patch["phone_number"] = "+" + phone
+    if account:
+        patch["account_name"] = account[:80]
+    if picture:
+        patch["profile_picture"] = picture[:500]
+    if patch:
+        update("wa_connections", conn_id, patch)
+
+
 def refresh_state(conn: dict) -> dict:
     try:
-        state = adapter_for(conn).state()
+        adapter = adapter_for(conn)
+        state = adapter.state()
         update("wa_connections", conn["id"], {"status": state, "status_detail": ""})
+        if state == "connected" and (not conn["account_name"] or not conn["phone_number"]):
+            try:
+                save_profile(conn["id"], **adapter.profile())
+            except WhatsAppError:
+                pass  # details are a nice-to-have
     except WhatsAppError as exc:
         update("wa_connections", conn["id"], {"status": "error", "status_detail": str(exc)[:300]})
     return public(get(conn["workspace_id"], conn["id"]))
 
 
-def set_status(conn_id: int, status: str, detail: str = "") -> None:
+def set_status(conn_id: int, status: str, detail: str = "", phone: str = "", account: str = "", picture: str = "") -> None:
     if status == "disconnected":
         # A linked device that drops after being connected is an expired session.
         prev = query_one("SELECT status FROM wa_connections WHERE id = ?", [conn_id])
         if prev and prev["status"] == "connected":
             status = "expired"
     update("wa_connections", conn_id, {"status": status, "status_detail": detail, "last_event_at": utcnow()})
+    if status == "connected":
+        save_profile(conn_id, phone, account, picture)
 
 
 def delete(workspace_id: int, conn_id: int) -> bool:
-    """Remove a number and its chats. The Evolution instance itself is left on
-    the Evolution server (delete it there if you no longer need it)."""
-    if not get(workspace_id, conn_id):
+    """Remove a number and its chats. For Evolution this also unlinks the phone and deletes the
+    instance on the Evolution server (best effort: removal from Agentry happens even if that fails)."""
+    conn = get(workspace_id, conn_id)
+    if not conn:
         return False
+    try:
+        adapter_for(conn).teardown()
+    except Exception as exc:  # never block removal on the provider
+        current_app.logger.info("teardown of connection %s failed: %s", conn_id, exc)
     execute("DELETE FROM wa_connections WHERE id = ? AND workspace_id = ?", [conn_id, workspace_id])
     return True
