@@ -106,3 +106,7 @@
 ## 1.4.1 (2026-11-20)
 - Frontend image: build stage uses `node:22-slim` instead of `node:22-alpine`. On Alpine, Rollup fails with
   "Code is nested too deeply" while bundling Vue. The served image is still `nginx:1.27-alpine`.
+
+## 1.4.2 (2026-11-20)
+- nginx answers 404 to dotfile and config-file probes (`/.env`, `/.git/config`, `*.sql`…) instead of the app page.
+- On a server, the "Can't reach the API" banner points to `docker compose ps` / `logs` instead of `make api`.

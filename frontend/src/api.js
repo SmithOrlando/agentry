@@ -36,9 +36,12 @@ export async function api(path, { method = "GET", json, form, query } = {}) {
   // Flask always answers JSON. Anything else came from something in between: the Vite dev proxy when
   // Flask isn't running (empty 500/502), macOS AirPlay on port 5000 (403), or a misconfigured nginx.
   if (!(res.headers.get("content-type") || "").includes("application/json")) {
-    return unreachable(res.status === 403
-      ? "Got 403 from something that isn't Agentry. On a Mac, port 5000 belongs to AirPlay. Run the API on 5001 (`make api`)."
-      : `The API isn't answering (HTTP ${res.status} from the proxy). Start it with \`make api\`. It should listen on http://localhost:5001.`);
+    // import.meta.env.DEV is true under the Vite dev server, false in the production build.
+    return unreachable(import.meta.env.DEV
+      ? (res.status === 403
+        ? "Got 403 from something that isn't Agentry. On a Mac, port 5000 belongs to AirPlay. Run the API on 5001 (`make api`)."
+        : `The API isn't answering (HTTP ${res.status} from the dev proxy). Start it with \`make api\`. It should listen on http://localhost:5001.`)
+      : `The server's API isn't answering (HTTP ${res.status}). It may be restarting; try again in a minute. If it lasts, an admin should check \`docker compose ps\` and \`docker compose logs api\`.`);
   }
   apiStatus.offline = false;
   let data = {};
