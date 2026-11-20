@@ -1,5 +1,7 @@
-# Stage 1: build the Vue app
-FROM node:22-alpine AS build
+# Stage 1: build the Vue app.
+# Debian-based (not Alpine): Rollup's native parser needs more stack than Alpine's musl gives threads,
+# and fails there with "Code is nested too deeply" on Vue's runtime files.
+FROM node:22-slim AS build
 WORKDIR /app
 COPY package.json package-lock.json* ./
 RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi

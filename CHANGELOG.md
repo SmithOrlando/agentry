@@ -102,3 +102,7 @@
 - GitHub Actions CI (`.github/workflows/ci.yml`): pytest, API-doc completeness, Vue production build,
   Docker build and health check.
 - API healthcheck starts faster, so `web` waits for a healthy `api`.
+
+## 1.4.1 (2026-11-20)
+- Frontend image: build stage uses `node:22-slim` instead of `node:22-alpine`. On Alpine, Rollup fails with
+  "Code is nested too deeply" while bundling Vue. The served image is still `nginx:1.27-alpine`.
