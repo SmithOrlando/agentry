@@ -1,0 +1,78 @@
+// Source for docs/architecture.png / .svg
+// Regenerate: dot -Tpng -Gdpi=160 docs/architecture.dot -o docs/architecture.png && dot -Tsvg docs/architecture.dot -o docs/architecture.svg
+digraph agentry {
+  graph [rankdir=LR, fontname="Helvetica", fontsize=13, bgcolor="white", pad=0.4, nodesep=0.35, ranksep=0.7,
+         label=<<b>Agentry — system architecture</b><br/><font point-size="11" color="#5B6573">Vue 3 SPA behind nginx · Flask JSON API (one process) · SQLite · in-process job pool · pluggable LLM providers and WhatsApp adapters</font>>,
+         labelloc=t, labeljust=l, compound=true];
+  node  [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=11, color="#C5CCD6", fillcolor="#FFFFFF", penwidth=1.2, margin="0.18,0.10"];
+  edge  [fontname="Helvetica", fontsize=9, color="#5B6573", fontcolor="#5B6573", arrowsize=0.7];
+
+  subgraph cluster_users {
+    label=<<b>People</b>>; style="rounded,filled"; fillcolor="#F2F4F7"; color="#E1E5EB";
+    browser  [label=<<b>Browser</b><br/><font point-size="9">your team</font>>, fillcolor="#E8F0FE", color="#BFD3F5"];
+    customer [label=<<b>Customer</b><br/><font point-size="9">WhatsApp app</font>>, fillcolor="#E6F4EA", color="#A7D7B5"];
+  }
+
+  subgraph cluster_edge {
+    label=<<b>web container</b>>; style="rounded,filled"; fillcolor="#F2F4F7"; color="#E1E5EB";
+    nginx [label=<<b>nginx</b><br/><font point-size="9">TLS-terminated upstream · one origin<br/>/ → SPA · /api, /webhooks → Flask</font>>];
+    spa   [label=<<b>Vue 3 SPA</b> (Vite build)<br/><font point-size="9">Playground · Inbox · WhatsApp ·<br/>Knowledge · Settings (7 pages)<br/>router · api.js · session.js</font>>, fillcolor="#E8F0FE", color="#1F6FEB"];
+  }
+
+  subgraph cluster_wa {
+    label=<<b>WhatsApp providers</b>>; style="rounded,filled"; fillcolor="#F2F4F7"; color="#E1E5EB";
+    evo  [label=<<b>Evolution API v2</b><br/><font point-size="9">QR-linked (Baileys)<br/>self-hosted</font>>];
+    meta [label=<<b>Meta Cloud API</b><br/><font point-size="9">official · Graph API</font>>];
+    gen  [label=<<b>Other gateway</b><br/><font point-size="9">WAHA / Z-API / Twilio bridge</font>>];
+  }
+
+  subgraph cluster_app {
+    label=<<b>api container — Flask JSON API (gunicorn: 1 worker × N threads)</b>>; style="rounded,filled"; fillcolor="#FAFBFC"; color="#1F6FEB"; penwidth=1.5;
+
+    subgraph cluster_http {
+      label="HTTP layer"; style="rounded,dashed"; color="#C5CCD6"; fontsize=10;
+      api   [label=<<b>api/*</b><br/><font point-size="9">JSON REST · session auth<br/>CSRF · role checks</font>>];
+      hooks [label=<<b>webhooks.py</b><br/><font point-size="9">secret-token URLs ·<br/>Meta HMAC signature</font>>];
+    }
+
+    subgraph cluster_svc {
+      label="Services"; style="rounded,dashed"; color="#C5CCD6"; fontsize=10;
+      conv  [label=<<b>conversations</b><br/><font point-size="9">reply pipeline · drafts ·<br/>handoff · opt-out · limits</font>>, fillcolor="#E8F0FE", color="#1F6FEB"];
+      agents[label=<<b>agents</b><br/><font point-size="9">prompt builder</font>>];
+      know  [label=<<b>knowledge</b><br/><font point-size="9">extract → chunk → BM25</font>>];
+      conns [label=<<b>connections</b><br/><font point-size="9">numbers · adapters</font>>];
+      sets  [label=<<b>settings</b><br/><font point-size="9">workspace JSON settings ·<br/>audit · usage</font>>];
+    }
+
+    worker [label=<<b>worker.py</b><br/><font point-size="9">thread pool: replies,<br/>indexing, URL fetch</font>>, fillcolor="#FFF4D6", color="#E3B341"];
+    router [label=<<b>llm/router.py</b><br/><font point-size="9">agent override → workspace key<br/>→ hidden platform default</font>>, fillcolor="#E8F0FE", color="#1F6FEB"];
+    adapters [label=<<b>whatsapp/adapters.py</b><br/><font point-size="9">Evolution · Meta · Generic · Sandbox</font>>];
+  }
+
+  subgraph cluster_data {
+    label=<<b>Storage</b>>; style="rounded,filled"; fillcolor="#F2F4F7"; color="#E1E5EB";
+    db    [label=<<b>SQLite</b> (WAL)<br/><font point-size="9">migrations/*.sql<br/>secrets Fernet-encrypted</font>>, shape=cylinder];
+    files [label=<<b>Uploads</b><br/><font point-size="9">instance/uploads/&lt;workspace&gt;</font>>, shape=folder];
+  }
+
+  subgraph cluster_llm {
+    label=<<b>LLM providers</b>>; style="rounded,filled"; fillcolor="#F2F4F7"; color="#E1E5EB";
+    llms [label=<<b>OpenAI · Anthropic · Gemini</b><br/>DeepSeek · Qwen · OpenAI-compatible<br/><font point-size="9">user keys (BYOK) or platform key from env</font>>];
+  }
+
+  browser -> nginx [label="https"];
+  nginx -> spa [label="static files", style=dashed];
+  spa -> nginx [label="fetch /api (cookie + CSRF)", style=dotted, constraint=false];
+  nginx -> api [label="/api"];
+  nginx -> hooks [label="/webhooks"];
+  customer -> evo [dir=both]; customer -> meta [dir=both]; customer -> gen [dir=both];
+  evo -> nginx  [label="messages.upsert"]; meta -> nginx [label="signed POST"]; gen -> nginx;
+  hooks -> conv [label="store + enqueue\n(return 200 fast)"];
+  api -> conv; api -> know; api -> conns; api -> sets; api -> router [label="playground"];
+  conv -> worker [style=dashed, label="respond()"]; know -> worker [style=dashed, label="index_file()"];
+  conv -> agents -> know;
+  conv -> router -> llms;
+  conv -> adapters; conns -> adapters;
+  adapters -> evo [label="sendText"]; adapters -> meta [label="/messages"]; adapters -> gen;
+  conv -> db; know -> db; know -> files; sets -> db; conns -> db; router -> db [label="encrypted keys", style=dotted];
+}

@@ -1,0 +1,16 @@
+frontend/
+instance/
+tests/
+docs/
+**/__pycache__
+.env
+*.db
+_to_delete/
+.venv/
+**/node_modules
+.git/
+Makefile.new
+.pytest_cache/
+.github/
+scripts/screenshots/
+*.log

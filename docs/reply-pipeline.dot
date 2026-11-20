@@ -1,0 +1,37 @@
+// Source for docs/reply-pipeline.png — what happens to one inbound WhatsApp message.
+// Regenerate: dot -Tpng -Gdpi=160 docs/reply-pipeline.dot -o docs/reply-pipeline.png
+digraph pipeline {
+  graph [rankdir=TB, fontname="Helvetica", bgcolor="white", pad=0.3, nodesep=0.3, ranksep=0.32,
+         label=<<b>Reply pipeline</b>  <font point-size="10" color="#5B6573">services/conversations.py</font>>, labelloc=t, labeljust=l];
+  node  [fontname="Helvetica", fontsize=10, shape=box, style="rounded,filled", fillcolor="#FFFFFF", color="#C5CCD6", margin="0.14,0.06"];
+  edge  [fontname="Helvetica", fontsize=9, color="#5B6573", fontcolor="#5B6573", arrowsize=0.6];
+
+  in    [label=<<b>Webhook</b>: provider POST → adapter.parse_webhook()>, fillcolor="#E8F0FE", color="#1F6FEB"];
+  store [label="handle_inbound(): ignore groups? · upsert contact + chat · dedupe provider id · save message · unread+1"];
+  q     [label=<enqueue <b>respond(chat, msg)</b> → HTTP 200>, fillcolor="#FFF4D6", color="#E3B341"];
+  newer [label="A newer customer message exists?", shape=diamond, style="filled", fillcolor="#FAFBFC"];
+  opt   [label="Opt-out keyword (STOP…)?", shape=diamond, style="filled", fillcolor="#FAFBFC"];
+  off   [label="Contact opted out · mode Off · no/paused agent · human handoff active?", shape=diamond, style="filled", fillcolor="#FAFBFC"];
+  hk    [label="Handoff keyword (human, refund…)?", shape=diamond, style="filled", fillcolor="#FAFBFC"];
+  bh    [label="“Business hours only” and closed?", shape=diamond, style="filled", fillcolor="#FAFBFC"];
+  gen   [label=<<b>Generate</b>: BM25 top-k chunks from the agent's files + instructions + rules + last 12 turns → llm.router (fallback chain)>, fillcolor="#E8F0FE", color="#1F6FEB"];
+  ho2   [label="Model answered [HANDOFF]?", shape=diamond, style="filled", fillcolor="#FAFBFC"];
+  mode  [label="Chat mode", shape=diamond, style="filled", fillcolor="#FAFBFC"];
+  rl    [label="Over max messages/min for this number?", shape=diamond, style="filled", fillcolor="#FAFBFC"];
+  send  [label=<random delay → adapter.send_text() → status <b>sent</b> / <b>failed</b>>, fillcolor="#E6F4EA", color="#1A7F37"];
+  draft [label=<save as <b>draft</b> → Inbox › Approve &amp; send>, fillcolor="#FFF4D6", color="#E3B341"];
+  stop  [label="stop (nothing sent)", fillcolor="#F2F4F7"];
+  note  [label="mark opted out, mode Off, system note", fillcolor="#FDECEC", color="#CF222E"];
+  hand  [label="handoff_active = 1 → “Needs you”", fillcolor="#FDECEC", color="#CF222E"];
+  away  [label="send away message (max once / 12 h)", fillcolor="#F2F4F7"];
+
+  in -> store -> q -> newer;
+  newer -> stop [label="yes (its own job answers)"]; newer -> opt [label="no"];
+  opt -> note [label="yes"]; opt -> off [label="no"];
+  off -> stop [label="yes"]; off -> hk [label="no"];
+  hk -> hand [label="yes"]; hk -> bh [label="no"];
+  bh -> away [label="yes"]; bh -> gen [label="no"];
+  gen -> ho2; ho2 -> hand [label="yes"]; ho2 -> mode [label="no"];
+  mode -> draft [label="draft"]; mode -> rl [label="auto"];
+  rl -> draft [label="yes"]; rl -> send [label="no"];
+}

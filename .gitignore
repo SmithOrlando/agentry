@@ -1,0 +1,25 @@
+# secrets and local data: never commit
+.env
+.env.*
+!.env.example
+instance/
+*.db
+*.db-*
+*.key
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+
+# Node / Vue
+node_modules/
+frontend/dist/
+
+# local scratch
+_to_delete/
+Makefile.new
+.DS_Store
+*.log

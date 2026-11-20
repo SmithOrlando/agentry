@@ -1,0 +1,64 @@
+# Agentry with Docker Compose.
+#
+#   cp .env.example .env        # or: scripts/init-env.sh agentry.example.com   (fills in fresh secrets)
+#   docker compose up -d --build
+#
+#   web — nginx serving the built Vue app; forwards /api, /webhooks, /healthz to `api`. The only published port.
+#   api — Flask JSON API + WhatsApp webhooks. Data (SQLite, uploads, backups) in the `agentry-data` volume.
+#
+# By default the app listens on 127.0.0.1:8090: put a reverse proxy with HTTPS in front (Caddy, nginx, Traefik)
+# and set PUBLIC_BASE_URL / FRONTEND_URL in .env to that https address. Change AGENTRY_BIND / AGENTRY_PORT in .env.
+#
+# Optional, self-hosted Evolution API (QR-linked WhatsApp numbers), only if you don't run one already:
+#   docker compose --profile evolution up -d
+#   In Agentry › WhatsApp › Evolution API use server URL http://evolution:8080 and EVOLUTION_API_KEY.
+
+name: agentry
+
+services:
+  web:
+    build: ./frontend
+    ports: ["${AGENTRY_BIND:-127.0.0.1}:${AGENTRY_PORT:-8090}:80"]
+    depends_on:
+      api: { condition: service_healthy }
+    restart: unless-stopped
+
+  api:
+    build: .
+    env_file: .env
+    volumes: ["agentry-data:/data"]
+    expose: ["8000"]
+    restart: unless-stopped
+    logging: { driver: json-file, options: { max-size: "10m", max-file: "5" } }
+
+  # ---- optional: docker compose --profile evolution up -d ------------------------------------------------
+  evolution:
+    profiles: ["evolution"]
+    image: evoapicloud/evolution-api:${EVOLUTION_VERSION:-latest}   # pin a version (e.g. v2.3.7) in production
+    environment:
+      SERVER_URL: http://evolution:8080
+      AUTHENTICATION_API_KEY: ${EVOLUTION_API_KEY:-}
+      DATABASE_PROVIDER: postgresql
+      DATABASE_CONNECTION_URI: postgresql://evolution:${EVOLUTION_DB_PASSWORD:-}@evolution-db:5432/evolution
+      CACHE_REDIS_ENABLED: "true"
+      CACHE_REDIS_URI: redis://evolution-redis:6379/1
+    depends_on: [evolution-db, evolution-redis]
+    volumes: ["evolution-instances:/evolution/instances"]
+    restart: unless-stopped
+
+  evolution-db:
+    profiles: ["evolution"]
+    image: postgres:16-alpine
+    environment: { POSTGRES_USER: evolution, POSTGRES_PASSWORD: "${EVOLUTION_DB_PASSWORD:-}", POSTGRES_DB: evolution }
+    volumes: ["evolution-pg:/var/lib/postgresql/data"]
+    restart: unless-stopped
+
+  evolution-redis:
+    profiles: ["evolution"]
+    image: redis:7-alpine
+    restart: unless-stopped
+
+volumes:
+  agentry-data:
+  evolution-instances:
+  evolution-pg:
