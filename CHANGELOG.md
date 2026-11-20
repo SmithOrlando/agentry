@@ -110,3 +110,9 @@
 ## 1.4.2 (2026-11-20)
 - nginx answers 404 to dotfile and config-file probes (`/.env`, `/.git/config`, `*.sql`…) instead of the app page.
 - On a server, the "Can't reach the API" banner points to `docker compose ps` / `logs` instead of `make api`.
+
+## 1.4.3 (2026-11-20)
+- **WhatsApp privacy IDs (LID).** Evolution messages that come from a `…@lid` sender are no longer
+  treated as phone numbers, which made every reply fail with `exists:false`. Agentry now uses the real
+  number when Evolution provides it (`senderPn` / `remoteJidAlt`), and otherwise replies to the LID JID
+  itself. The Inbox shows "Private number" for such contacts.

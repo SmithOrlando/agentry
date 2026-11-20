@@ -51,6 +51,31 @@ def digits(jid_or_phone: str) -> str:
     return "".join(ch for ch in (jid_or_phone or "").split("@")[0] if ch.isdigit())
 
 
+def evolution_sender(key: dict) -> str:
+    """Who sent an Evolution/Baileys message, as Agentry stores it (contacts.wa_id).
+
+    WhatsApp increasingly hides phone numbers behind a privacy ID ("LID", e.g. 2101…@lid). When the
+    phone number is also given (senderPn / remoteJidAlt / participantPn / participantAlt) use it;
+    otherwise keep the full "…@lid" JID, because a LID is NOT a phone number and can't be sent to as one.
+    """
+    jid = key.get("remoteJid", "")
+    if jid.endswith("@g.us"):
+        src = key.get("participant") or ""
+        alts = (key.get("participantPn"), key.get("participantAlt"))
+    else:
+        src = jid
+        alts = (key.get("senderPn"), key.get("remoteJidAlt"))
+    if src.endswith("@lid"):
+        phone = next((a for a in alts if a and not a.endswith("@lid")), "")
+        return digits(phone) if phone else src
+    return digits(src)
+
+
+def send_target(wa_id: str) -> str:
+    """Phone numbers are sent as digits; LID contacts as their full JID."""
+    return wa_id if "@" in (wa_id or "") else digits(wa_id)
+
+
 class Adapter:
     provider = "base"
 
@@ -126,7 +151,7 @@ class EvolutionAdapter(Adapter):
 
     def send_text(self, to, text):
         data = self._req("POST", self._u(f"/message/sendText/{self.config['instance']}"), headers=self._h(),
-                         json={"number": digits(to), "text": text})
+                         json={"number": send_target(to), "text": text})
         return ((data.get("key") or {}).get("id")) or data.get("id") or ""
 
     def parse_webhook(self, payload):
@@ -154,8 +179,7 @@ class EvolutionAdapter(Adapter):
                 if not text:
                     continue  # media without caption: not handled in v1
                 jid = key.get("remoteJid", "")
-                out.append(Inbound(digits(key.get("participant") or jid) if jid.endswith("@g.us") else digits(jid),
-                                   m.get("pushName", ""), text, key.get("id", ""), jid.endswith("@g.us")))
+                out.append(Inbound(evolution_sender(key), m.get("pushName", ""), text, key.get("id", ""), jid.endswith("@g.us")))
             return out
         if event == "connection.update":
             st = str(data.get("state", "")).lower()

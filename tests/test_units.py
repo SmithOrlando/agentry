@@ -152,3 +152,17 @@ def test_evolution_ignores_replayed_old_messages():
                 "pushName": "Ana", "message": {"conversation": "hola"}, "messageTimestamp": int(_t.time()) - age}
     out = a.parse_webhook({"event": "messages.upsert", "data": [msg("new", 5), msg("old", 3600)]})
     assert [m.provider_message_id for m in out] == ["new"]
+
+
+def test_evolution_lid_senders():
+    from app.whatsapp.adapters import evolution_sender, send_target
+    # privacy ID only: keep the full JID, never treat it as a phone number
+    assert evolution_sender({"remoteJid": "21016013209676@lid"}) == "21016013209676@lid"
+    assert send_target("21016013209676@lid") == "21016013209676@lid"
+    # privacy ID plus the real number: use the number
+    assert evolution_sender({"remoteJid": "21016013209676@lid", "senderPn": "212723688997@s.whatsapp.net"}) == "212723688997"
+    assert evolution_sender({"remoteJid": "21016013209676@lid", "remoteJidAlt": "212723688997@s.whatsapp.net"}) == "212723688997"
+    # classic phone JID and groups
+    assert evolution_sender({"remoteJid": "573001112233@s.whatsapp.net"}) == "573001112233"
+    assert evolution_sender({"remoteJid": "1203@g.us", "participant": "999@lid", "participantPn": "573001112233@s.whatsapp.net"}) == "573001112233"
+    assert send_target("573001112233") == "573001112233"

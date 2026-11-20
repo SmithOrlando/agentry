@@ -18,7 +18,7 @@
         <button v-for="c in chats" :key="c.id" type="button" class="chatrow" :class="{ on: c.id === chatId }" @click="openChat(c.id)">
           <span class="avatar" style="width:46px;height:46px" :style="{ background: colorFor(c.wa_id) }">{{ initials(c.contact_name || c.wa_id) }}</span>
           <span class="meta">
-            <span class="l1"><b>{{ c.contact_name || "+" + c.wa_id }}</b>
+            <span class="l1"><b>{{ c.contact_name || phoneLabel(c.wa_id) }}</b>
               <span class="small" :style="{ color: c.unread_count ? 'var(--pri-tx)' : 'var(--mut)' }">{{ ago(c.last_message_at) }}</span></span>
             <span class="l2"><span class="prev" :style="c.unread_count ? 'color:var(--tx)' : ''">{{ c.last_message_preview }}</span>
               <span v-if="c.unread_count" class="badge" style="height:20px;min-width:20px;font-size:11px">{{ c.unread_count }}</span></span>
@@ -36,7 +36,7 @@
       <template v-else>
         <div class="conv-head">
           <div class="row-c"><span class="avatar" style="width:44px;height:44px" :style="{ background: colorFor(chat.wa_id) }">{{ initials(contactName) }}</span>
-            <div><b style="font-size:16px;display:block">{{ contactName }}</b><span class="muted small">+{{ chat.wa_id }} · {{ chat.connection_name }}</span></div></div>
+            <div><b style="font-size:16px;display:block">{{ contactName }}</b><span class="muted small">{{ phoneLabel(chat.wa_id) }} · {{ chat.connection_name }}</span></div></div>
           <div class="row-c">
             <span class="chip info"><AppIcon name="spark" size="16" />{{ agentName }} · {{ chat.handoff_active ? "Paused" : MODE_LABEL[chat.mode] }}</span>
             <template v-if="can('supervisor')">
@@ -164,7 +164,9 @@ const filterOptions = computed(() => [
   { value: "needs_you", label: `Needs you${counts.value.needs_you ? " " + counts.value.needs_you : ""}` },
 ]);
 const chat = computed(() => detail.value?.chat);
-const contactName = computed(() => chat.value?.contact_name || "+" + chat.value?.wa_id);
+// WhatsApp privacy IDs ("…@lid") are not phone numbers: don't show them as "+2101…".
+const phoneLabel = (id) => (String(id || "").includes("@") ? "Private number" : "+" + id);
+const contactName = computed(() => chat.value?.contact_name || phoneLabel(chat.value?.wa_id));
 const agentName = computed(() => agents.value.find((a) => a.id === chat.value?.agent_id)?.name || "No agent");
 const timeline = computed(() => {
   const out = [];
