@@ -128,3 +128,9 @@
   `connection.update` event or `fetchInstances` on refresh. Migration `002_number_profile.sql` adds
   `account_name` and `profile_picture`.
 - All "Are you sure?" prompts use an in-app dialog instead of the browser's `confirm()`, which can be blocked silently.
+
+## 1.5.1 (2026-11-21)
+- **Choose any model.** Settings › Models now has a picker that lists the models your saved key can use, loaded
+  every time you open the page (`GET /api/settings/providers/<p>/models`, cached 10 minutes), with
+  "Other (type a name)…" for anything else, e.g. `gemini-3-flash-preview`. The per-agent model fields use the same picker.
+- When the first key is saved and the starter model isn't offered by that key, the first model it lists is used instead.

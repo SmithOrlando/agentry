@@ -37,7 +37,7 @@ curl -b jar -H "X-CSRF-Token: $TOKEN" -H 'Content-Type: application/json' -d '{"
 - **Knowledge**: [`GET /api/knowledge/files`](#get-api-knowledge-files) · [`POST /api/knowledge/files`](#post-api-knowledge-files) · [`POST /api/knowledge/text`](#post-api-knowledge-text) · [`POST /api/knowledge/url`](#post-api-knowledge-url) · [`PATCH /api/knowledge/files/{fid}`](#patch-api-knowledge-files-fid) · [`POST /api/knowledge/files/{fid}/reindex`](#post-api-knowledge-files-fid-reindex) · [`DELETE /api/knowledge/files/{fid}`](#delete-api-knowledge-files-fid)
 - **WhatsApp numbers**: [`GET /api/whatsapp/connections`](#get-api-whatsapp-connections) · [`POST /api/whatsapp/connections`](#post-api-whatsapp-connections) · [`PATCH /api/whatsapp/connections/{cid}`](#patch-api-whatsapp-connections-cid) · [`DELETE /api/whatsapp/connections/{cid}`](#delete-api-whatsapp-connections-cid) · [`GET /api/whatsapp/connections/{cid}/qr`](#get-api-whatsapp-connections-cid-qr) · [`POST /api/whatsapp/connections/{cid}/refresh`](#post-api-whatsapp-connections-cid-refresh) · [`POST /api/whatsapp/connections/{cid}/simulate`](#post-api-whatsapp-connections-cid-simulate)
 - **Inbox**: [`GET /api/inbox/chats`](#get-api-inbox-chats) · [`GET /api/inbox/chats/{cid}`](#get-api-inbox-chats-cid) · [`PATCH /api/inbox/chats/{cid}`](#patch-api-inbox-chats-cid) · [`DELETE /api/inbox/chats/{cid}`](#delete-api-inbox-chats-cid) · [`POST /api/inbox/chats/{cid}/messages`](#post-api-inbox-chats-cid-messages) · [`POST /api/inbox/chats/{cid}/takeover`](#post-api-inbox-chats-cid-takeover) · [`POST /api/inbox/chats/{cid}/resume`](#post-api-inbox-chats-cid-resume) · [`POST /api/inbox/chats/{cid}/ask-agent`](#post-api-inbox-chats-cid-ask-agent) · [`POST /api/inbox/messages/{mid}/approve`](#post-api-inbox-messages-mid-approve) · [`POST /api/inbox/messages/{mid}/discard`](#post-api-inbox-messages-mid-discard)
-- **Settings**: [`GET /api/settings/general`](#get-api-settings-general) · [`PATCH /api/settings/general`](#patch-api-settings-general) · [`DELETE /api/settings/workspace`](#delete-api-settings-workspace) · [`GET /api/settings/llm`](#get-api-settings-llm) · [`PATCH /api/settings/llm`](#patch-api-settings-llm) · [`PUT /api/settings/providers/{provider}`](#put-api-settings-providers-provider) · [`DELETE /api/settings/providers/{provider}`](#delete-api-settings-providers-provider) · [`POST /api/settings/providers/{provider}/test`](#post-api-settings-providers-provider-test) · [`GET /api/settings/whatsapp`](#get-api-settings-whatsapp) · [`PATCH /api/settings/whatsapp`](#patch-api-settings-whatsapp) · [`GET /api/settings/agent-defaults`](#get-api-settings-agent-defaults) · [`PATCH /api/settings/agent-defaults`](#patch-api-settings-agent-defaults) · [`GET /api/settings/security`](#get-api-settings-security) · [`PATCH /api/settings/security`](#patch-api-settings-security)
+- **Settings**: [`GET /api/settings/general`](#get-api-settings-general) · [`PATCH /api/settings/general`](#patch-api-settings-general) · [`DELETE /api/settings/workspace`](#delete-api-settings-workspace) · [`GET /api/settings/llm`](#get-api-settings-llm) · [`PATCH /api/settings/llm`](#patch-api-settings-llm) · [`PUT /api/settings/providers/{provider}`](#put-api-settings-providers-provider) · [`DELETE /api/settings/providers/{provider}`](#delete-api-settings-providers-provider) · [`GET /api/settings/providers/{provider}/models`](#get-api-settings-providers-provider-models) · [`POST /api/settings/providers/{provider}/test`](#post-api-settings-providers-provider-test) · [`GET /api/settings/whatsapp`](#get-api-settings-whatsapp) · [`PATCH /api/settings/whatsapp`](#patch-api-settings-whatsapp) · [`GET /api/settings/agent-defaults`](#get-api-settings-agent-defaults) · [`PATCH /api/settings/agent-defaults`](#patch-api-settings-agent-defaults) · [`GET /api/settings/security`](#get-api-settings-security) · [`PATCH /api/settings/security`](#patch-api-settings-security)
 - **Team**: [`GET /api/team`](#get-api-team) · [`POST /api/team/invites`](#post-api-team-invites) · [`DELETE /api/team/invites/{iid}`](#delete-api-team-invites-iid) · [`PATCH /api/team/members/{uid}`](#patch-api-team-members-uid) · [`DELETE /api/team/members/{uid}`](#delete-api-team-members-uid)
 - **Usage & audit**: [`GET /api/usage`](#get-api-usage) · [`GET /api/audit`](#get-api-audit) · [`GET /api/export`](#get-api-export)
 - **Webhooks**: [`POST /webhooks/{provider}/{conn_id}/{token}`](#post-webhooks-provider-conn-id-token) · [`GET /webhooks/meta/{conn_id}`](#get-webhooks-meta-conn-id) · [`POST /webhooks/meta/{conn_id}`](#post-webhooks-meta-conn-id)
@@ -209,7 +209,7 @@ Example response `200`:
 
 ```json
 {
-  "csrf": "wyz5x5gAM7kw026mUHtxfHxHrF4DYJT_7GXNoaNmD3w",
+  "csrf": "eUwIv_P-TIDV9yyBbp3m5d0XlgKT_P2U4V4oFoLz8as",
   "setup": {
     "model_ready": false,
     "real_whatsapp": false,
@@ -256,7 +256,7 @@ Example response `200`:
       "agent_id": 1,
       "id": 1,
       "title": "What is the return policy for sale items?",
-      "updated_at": "2026-11-20T10:20:31Z"
+      "updated_at": "2026-11-21T03:26:59Z"
     }
   ]
 }
@@ -325,7 +325,7 @@ Example response `200`:
 {
   "messages": [
     {
-      "created_at": "2026-11-20T10:20:31Z",
+      "created_at": "2026-11-21T03:26:59Z",
       "id": 1,
       "meta": {},
       "role": "user",
@@ -333,7 +333,7 @@ Example response `200`:
       "text": "What is the return policy for sale items?"
     },
     {
-      "created_at": "2026-11-20T10:20:31Z",
+      "created_at": "2026-11-21T03:26:59Z",
       "id": 2,
       "meta": {
         "agent": "Customer Service",
@@ -351,10 +351,10 @@ Example response `200`:
   ],
   "session": {
     "agent_id": 1,
-    "created_at": "2026-11-20T10:20:31Z",
+    "created_at": "2026-11-21T03:26:59Z",
     "id": 1,
     "title": "What is the return policy for sale items?",
-    "updated_at": "2026-11-20T10:20:31Z",
+    "updated_at": "2026-11-21T03:26:59Z",
     "user_id": 1,
     "workspace_id": 1
   }
@@ -482,14 +482,14 @@ Example response `200`:
       "active_model": "Platform default",
       "chat_count": 0,
       "color": "#1F6FEB",
-      "created_at": "2026-11-20T10:20:30Z",
+      "created_at": "2026-11-21T03:26:59Z",
       "description": "Orders, returns, FAQs",
       "file_count": 0,
       "id": 1,
       "instructions": "You are the customer service agent for {business}. Be warm and brief — two or three sentences. Only answer from the knowledge sources. If…",
       "model_override": null,
       "name": "Customer Service",
-      "updated_at": "2026-11-20T10:20:30Z",
+      "updated_at": "2026-11-21T03:26:59Z",
       "workspace_id": 1
     },
     {
@@ -497,14 +497,14 @@ Example response `200`:
       "active_model": "Platform default",
       "chat_count": 0,
       "color": "#E8590C",
-      "created_at": "2026-11-20T10:20:30Z",
+      "created_at": "2026-11-21T03:26:59Z",
       "description": "Tasks, deadlines, follow-ups",
       "file_count": 0,
       "id": 2,
       "instructions": "You coordinate projects for {business}. Confirm dates, owners and next steps clearly. Never promise a date that is not in the sources.",
       "model_override": null,
       "name": "Project Manager",
-      "updated_at": "2026-11-20T10:20:30Z",
+      "updated_at": "2026-11-21T03:26:59Z",
       "workspace_id": 1
     },
     "… 2 more"
@@ -675,7 +675,7 @@ Example response `200`:
         }
       ],
       "chunk_count": 0,
-      "created_at": "2026-11-20T10:20:31Z",
+      "created_at": "2026-11-21T03:26:59Z",
       "error": "That address is not allowed",
       "filename": "http://127.0.0.1/internal",
       "id": 3,
@@ -683,7 +683,7 @@ Example response `200`:
       "size_bytes": 0,
       "source_url": "http://127.0.0.1/internal",
       "status": "failed",
-      "updated_at": "2026-11-20T10:20:31Z"
+      "updated_at": "2026-11-21T03:26:59Z"
     },
     {
       "agents": [
@@ -693,7 +693,7 @@ Example response `200`:
         }
       ],
       "chunk_count": 1,
-      "created_at": "2026-11-20T10:20:31Z",
+      "created_at": "2026-11-21T03:26:59Z",
       "error": null,
       "filename": "shipping.txt",
       "id": 2,
@@ -701,7 +701,7 @@ Example response `200`:
       "size_bytes": 43,
       "source_url": null,
       "status": "ready",
-      "updated_at": "2026-11-20T10:20:31Z"
+      "updated_at": "2026-11-21T03:26:59Z"
     },
     "… 1 more"
   ],
@@ -968,19 +968,19 @@ Example response `200`:
   "connections": [
     {
       "account_name": "",
-      "created_at": "2026-11-20T10:20:31Z",
+      "created_at": "2026-11-21T03:26:59Z",
       "default_agent_id": 1,
       "default_mode": "draft",
       "id": 1,
-      "last_event_at": "2026-11-20T10:20:31Z",
-      "last_message_at": "2026-11-20T10:20:31Z",
+      "last_event_at": "2026-11-21T03:26:59Z",
+      "last_message_at": "2026-11-21T03:26:59Z",
       "name": "Support line",
       "phone_number": "+57 300 000 4821",
       "profile_picture": "",
       "provider": "sandbox",
       "status": "connected",
       "status_detail": "",
-      "webhook_url": "https://agents.example.com/webhooks/sandbox/1/Ou2HE_XmlzyqSsAPUlxATMmcoc9UgZEO"
+      "webhook_url": "https://agents.example.com/webhooks/sandbox/1/nQKfBfsR-jAhUiV_OGHrmXpnOlpAxQty"
     }
   ]
 }
@@ -1025,7 +1025,7 @@ Example response `201`:
 {
   "connection": {
     "account_name": "",
-    "created_at": "2026-11-20T10:20:31Z",
+    "created_at": "2026-11-21T03:26:59Z",
     "default_agent_id": null,
     "default_mode": null,
     "id": 1,
@@ -1036,7 +1036,7 @@ Example response `201`:
     "provider": "sandbox",
     "status": "connected",
     "status_detail": "",
-    "webhook_url": "https://agents.example.com/webhooks/sandbox/1/Ou2HE_XmlzyqSsAPUlxATMmcoc9UgZEO"
+    "webhook_url": "https://agents.example.com/webhooks/sandbox/1/nQKfBfsR-jAhUiV_OGHrmXpnOlpAxQty"
   }
 }
 ```
@@ -1086,7 +1086,7 @@ Example response `200`:
 {
   "connection": {
     "account_name": "",
-    "created_at": "2026-11-20T10:20:31Z",
+    "created_at": "2026-11-21T03:26:59Z",
     "default_agent_id": 1,
     "default_mode": "draft",
     "id": 1,
@@ -1097,7 +1097,7 @@ Example response `200`:
     "provider": "sandbox",
     "status": "connected",
     "status_detail": "",
-    "webhook_url": "https://agents.example.com/webhooks/sandbox/1/Ou2HE_XmlzyqSsAPUlxATMmcoc9UgZEO"
+    "webhook_url": "https://agents.example.com/webhooks/sandbox/1/nQKfBfsR-jAhUiV_OGHrmXpnOlpAxQty"
   }
 }
 ```
@@ -1191,7 +1191,7 @@ Example response `200`:
 {
   "connection": {
     "account_name": "",
-    "created_at": "2026-11-20T10:20:31Z",
+    "created_at": "2026-11-21T03:26:59Z",
     "default_agent_id": 1,
     "default_mode": "draft",
     "id": 1,
@@ -1202,7 +1202,7 @@ Example response `200`:
     "provider": "sandbox",
     "status": "connected",
     "status_detail": "",
-    "webhook_url": "https://agents.example.com/webhooks/sandbox/1/Ou2HE_XmlzyqSsAPUlxATMmcoc9UgZEO"
+    "webhook_url": "https://agents.example.com/webhooks/sandbox/1/nQKfBfsR-jAhUiV_OGHrmXpnOlpAxQty"
   }
 }
 ```
@@ -1297,7 +1297,7 @@ Example response `200`:
       "drafts": 0,
       "handoff_active": 0,
       "id": 2,
-      "last_message_at": "2026-11-20T10:20:31Z",
+      "last_message_at": "2026-11-21T03:26:59Z",
       "last_message_preview": "Hola",
       "mode": "draft",
       "unread_count": 1,
@@ -1313,7 +1313,7 @@ Example response `200`:
       "drafts": 2,
       "handoff_active": 0,
       "id": 1,
-      "last_message_at": "2026-11-20T10:20:31Z",
+      "last_message_at": "2026-11-21T03:26:59Z",
       "last_message_preview": "And shipping to Bogota?",
       "mode": "draft",
       "unread_count": 2,
@@ -1367,12 +1367,12 @@ Example response `200`:
     "connection_name": "Support line",
     "contact_id": 1,
     "contact_name": "Maria López",
-    "contact_since": "2026-11-20T10:20:31Z",
-    "created_at": "2026-11-20T10:20:31Z",
+    "contact_since": "2026-11-21T03:26:59Z",
+    "created_at": "2026-11-21T03:26:59Z",
     "handoff_active": 0,
     "id": 1,
     "last_away_sent_at": null,
-    "last_message_at": "2026-11-20T10:20:31Z",
+    "last_message_at": "2026-11-21T03:26:59Z",
     "last_message_preview": "And shipping to Bogota?",
     "mode": "draft",
     "opted_out": 0,
@@ -1390,7 +1390,7 @@ Example response `200`:
     {
       "agent_name": null,
       "author": "customer",
-      "created_at": "2026-11-20T10:20:31Z",
+      "created_at": "2026-11-21T03:26:59Z",
       "direction": "in",
       "error": null,
       "id": 1,
@@ -1402,7 +1402,7 @@ Example response `200`:
     {
       "agent_name": "Customer Service",
       "author": "agent",
-      "created_at": "2026-11-20T10:20:31Z",
+      "created_at": "2026-11-21T03:26:59Z",
       "direction": "out",
       "error": null,
       "id": 2,
@@ -1421,7 +1421,7 @@ Example response `200`:
   "stats": {
     "agent_replies": 0,
     "drafts_approved": 0,
-    "first_message": "2026-11-20T10:20:31Z"
+    "first_message": "2026-11-21T03:26:59Z"
   }
 }
 ```
@@ -1693,7 +1693,7 @@ Example response `200`:
     "agent_id": 1,
     "author": "agent",
     "chat_id": 1,
-    "created_at": "2026-11-20T10:20:31Z",
+    "created_at": "2026-11-21T03:26:59Z",
     "direction": "out",
     "error": null,
     "id": 2,
@@ -2021,7 +2021,7 @@ Save (or replace) an API key for a provider. Stored encrypted.
 | `api_key` | string | no | Required the first time; blank keeps the stored key |
 | `base_url` | string | no | Proxy / Azure / self-hosted endpoint (required for openai_compatible) |
 
-**Returns:** `{ok: true, switched}`. If the workspace had no real model yet, it is switched to this key automatically (source `byok`, a starter model such as `gpt-4o-mini`) and the response includes `switched: true` and the new `settings`.
+**Returns:** `{ok: true, switched}`. If the workspace had no real model yet, it is switched to this key automatically (source `byok`, a starter model such as `gpt-4o-mini`, or the first model the key lists if that one isn't available) and the response includes `switched: true` and the new `settings`.
 
 Example request:
 
@@ -2075,6 +2075,43 @@ Example response `200`:
   "ok": true
 }
 ```
+
+---
+
+### `GET /api/settings/providers/{provider}/models`
+
+Models the saved key can use (for the model pickers). Cached for 10 minutes.
+
+**Role:** admin
+
+**Path parameters**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `provider` | string | yes | Provider id |
+
+**Query parameters**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `fresh` | string | no | `1` to skip the cache |
+
+**Returns:** `{models: [ids]}`
+
+Example response `200` (illustrative: needs a live provider):
+
+```json
+{
+  "models": [
+    "gemini-2.5-flash",
+    "gemini-2.5-pro",
+    "gemini-3-flash-preview",
+    "\u2026"
+  ]
+}
+```
+
+**Errors:** `502` no key saved, or the provider rejected it (message included)
 
 ---
 
@@ -2359,13 +2396,13 @@ Example response `200`:
 {
   "invites": [
     {
-      "created_at": "2026-11-20T10:20:31Z",
+      "created_at": "2026-11-21T03:26:59Z",
       "email": "lee@example.com",
       "id": 2,
       "role": "supervisor"
     },
     {
-      "created_at": "2026-11-20T10:20:31Z",
+      "created_at": "2026-11-21T03:26:59Z",
       "email": "sam@example.com",
       "id": 1,
       "role": "supervisor"
@@ -2376,7 +2413,7 @@ Example response `200`:
     {
       "email": "owner@example.com",
       "id": 1,
-      "last_active_at": "2026-11-20T10:20:30Z",
+      "last_active_at": "2026-11-21T03:26:59Z",
       "name": "Ana Owner",
       "role": "owner"
     }
@@ -2420,11 +2457,11 @@ Example response `201`:
   "invites": [
     {
       "email": "sam@example.com",
-      "link": "https://agents.example.com/register?invite=40LAVI5pmpSDAAkOpLkL3bJps_tXjqS-"
+      "link": "https://agents.example.com/register?invite=s2Yif_0tJflnBVHTsee-YK0G2xJoZwF6"
     },
     {
       "email": "lee@example.com",
-      "link": "https://agents.example.com/register?invite=6sJQ-vuhg-q8iFBWMgx61NQ-LrTItHd4"
+      "link": "https://agents.example.com/register?invite=XBfa3PfE7IE-RFHv-qnxv9TA2bBHok90"
     }
   ]
 }
@@ -2591,13 +2628,13 @@ Example response `200`:
   "entries": [
     {
       "action": "changed password",
-      "created_at": "2026-11-20T10:20:31Z",
+      "created_at": "2026-11-21T03:26:59Z",
       "target": "",
       "user_name": "Ana Owner"
     },
     {
       "action": "removed member",
-      "created_at": "2026-11-20T10:20:31Z",
+      "created_at": "2026-11-21T03:26:59Z",
       "target": "sam@example.com",
       "user_name": "Ana Owner"
     },
@@ -2644,19 +2681,19 @@ Example response `200`:
   "chats": [
     {
       "agent_id": 1,
-      "created_at": "2026-11-20T10:20:31Z",
+      "created_at": "2026-11-21T03:26:59Z",
       "id": 1,
       "messages": [
         {
           "author": "customer",
-          "created_at": "2026-11-20T10:20:31Z",
+          "created_at": "2026-11-21T03:26:59Z",
           "direction": "in",
           "status": "received",
           "text": "Can I return sale items?"
         },
         {
           "author": "agent",
-          "created_at": "2026-11-20T10:20:31Z",
+          "created_at": "2026-11-21T03:26:59Z",
           "direction": "out",
           "status": "sent",
           "text": "Hi Maria! Sale items can be returned within 14 days for store credit."
@@ -2670,25 +2707,25 @@ Example response `200`:
   ],
   "contacts": [
     {
-      "created_at": "2026-11-20T10:20:31Z",
+      "created_at": "2026-11-21T03:26:59Z",
       "name": "Maria López",
       "opted_out": 0,
       "tags": "[\"Returning\"]",
       "wa_id": "573001119014"
     }
   ],
-  "exported_at": "2026-11-20T10:20:31Z",
+  "exported_at": "2026-11-21T03:26:59Z",
   "knowledge_files": [
     {
       "chunk_count": 1,
-      "created_at": "2026-11-20T10:20:31Z",
+      "created_at": "2026-11-21T03:26:59Z",
       "filename": "Returns FAQ",
       "kind": "qa",
       "status": "ready"
     },
     {
       "chunk_count": 1,
-      "created_at": "2026-11-20T10:20:31Z",
+      "created_at": "2026-11-21T03:26:59Z",
       "filename": "shipping.txt",
       "kind": "txt",
       "status": "ready"
@@ -2728,7 +2765,7 @@ Inbound events from Evolution API, a generic gateway or the sandbox. The URL (wi
 Example request:
 
 ```http
-POST /webhooks/sandbox/1/Ou2HE_XmlzyqSsAPUlxATMmcoc9UgZEO
+POST /webhooks/sandbox/1/nQKfBfsR-jAhUiV_OGHrmXpnOlpAxQty
 Content-Type: application/json
 
 {

@@ -1,7 +1,7 @@
 import secrets
 from datetime import datetime, timezone
 
-from flask import current_app, g, jsonify
+from flask import current_app, g, jsonify, request
 
 from ..db import execute, get_db, insert, query, query_one, update, utcnow
 from ..llm import router
@@ -109,9 +109,16 @@ def provider_put(provider):
     ssvc.audit(ws(), g.user["id"], "saved API key", PROVIDER_LABELS[provider])
     # First real key while replies still come from the placeholder model: start using this key right away.
     # (Otherwise the workspace stays on "Platform default" and nothing visibly changes.)
+    router.forget_models(ws(), provider)
     if not router.model_ready(ws()):
         cur = ssvc.get_section(ws(), "llm_settings")
         model = cur["model"] if cur["provider"] == provider and cur["model"] else router.STARTER_MODEL.get(provider, "")
+        try:  # use a model this key really has; the user can pick another on the Models page
+            available = router.list_models(ws(), provider)
+            if available and model not in available:
+                model = available[0]
+        except LLMError:
+            pass
         settings = ssvc.update_section(ws(), "llm_settings", {"source": "byok", "provider": provider, "model": model})
         ssvc.audit(ws(), g.user["id"], "switched to own API key", PROVIDER_LABELS[provider])
         return jsonify(ok=True, switched=True, settings=settings)
@@ -124,6 +131,16 @@ def provider_delete(provider):
     execute("DELETE FROM provider_keys WHERE workspace_id = ? AND provider = ?", [ws(), provider])
     ssvc.audit(ws(), g.user["id"], "removed API key", PROVIDER_LABELS.get(provider, provider))
     return jsonify(ok=True)
+
+
+@bp.get("/settings/providers/<provider>/models")
+@role_required("admin")
+def provider_models(provider):
+    """Models the saved key can use, for the model pickers. ?fresh=1 skips the 10-minute cache."""
+    try:
+        return jsonify(models=router.list_models(ws(), provider, fresh=request.args.get("fresh") == "1"))
+    except LLMError as exc:
+        return err(str(exc), 502)
 
 
 @bp.post("/settings/providers/<provider>/test")

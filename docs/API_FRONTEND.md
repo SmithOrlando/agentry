@@ -83,6 +83,7 @@ const { form, dirty, saving, save, discard, ready } = useSettingsForm(
 | `AppShell` | `—` | `—` | — | Page frame: sidebar (nav, Finish setup card, number status, user, theme, sign-out), API-offline banner + `<RouterView>`. Pages may teleport extra sidebar content to `#side-extra` |
 | `BrandMark` | `{ size: { type: [Number, String], default: 26 } }` | `—` | — | The AI Wonder Lab logo mark (ring + breathing mint core), shared with the mother project |
 | `ChipsInput` | `{ modelValue: { type: Array, required: true }, label: { type: String, default: "list" }, disabled: Boolean }` | `["update:modelValue"]` | — | Editable list of chips (Enter adds, × removes), use with `v-model` |
+| `ModelPicker` | `{   modelValue: { type: String, default: "" },   models: { type: Array, default: () => [] },   // from GET /settings/providers/<p>/models   loading: Boolean,   disabled: Boolean,   label: { type: String, default: "Model" }, }` | `["update:modelValue"]` | — | Model dropdown filled from `GET /settings/providers/<p>/models`, with “Other (type a name)…” for any model id; use with `v-model` |
 | `SaveBar` | `{ dirty: Boolean, saving: Boolean }` | `["save", "discard"]` | — | Sticky "unsaved changes" bar (only shown to admins) |
 | `SegControl` | `{ modelValue: [String, Number], options: { type: Array, required: true }, label: String, tabs: Boolean, disabled: Boolean }` | `["update:modelValue"]` | — | Segmented buttons (radio group or tabs), use with `v-model` |
 | `SettingsGroup` | `{ title: { type: String, required: true }, desc: String }` | `—` | default, action | Titled card section on settings pages |
@@ -243,6 +244,7 @@ Every backend call in the Vue code, the function it's made from, and the endpoin
 
 | Function | Request | Reference |
 |---|---|---|
+| `loadModels` | `GET /api/settings/providers/&lt;id&gt;/models` | [`GET /api/settings/providers/{provider}/models`](API_BACKEND.md#get-api-settings-providers-provider-models) |
 | `useSettingsForm (load / save)` | `GET /api/settings/llm` | [`GET /api/settings/llm`](API_BACKEND.md#get-api-settings-llm) |
 | `useSettingsForm (load / save)` | `GET /api/agents` | [`GET /api/agents`](API_BACKEND.md#get-api-agents) |
 | `useSettingsForm (load / save)` | `PATCH /api/settings/llm` | [`PATCH /api/settings/llm`](API_BACKEND.md#patch-api-settings-llm) |

@@ -40,13 +40,14 @@
     </SettingsGroup>
 
     <SettingsGroup title="Workspace model" desc="Used by every agent unless it has its own model below.">
-      <SettingsRow title="Provider & model" desc="Model list loads after you test a key. You can also type a model name.">
+      <SettingsRow title="Provider & model" desc="Choose from the models your key can use, or pick “Other” and type any model name.">
         <div class="row-c wrap">
           <select v-model="form.provider" class="select" style="width:180px" aria-label="Provider" :disabled="!admin">
             <option v-for="p in providers" :key="p.id" :value="p.id">{{ p.label }}</option></select>
-          <input v-model="form.model" class="input" list="model-list" style="width:240px" placeholder="model name" aria-label="Model" :disabled="!admin">
-          <datalist id="model-list"><option v-for="m in models[form.provider] || []" :key="m" :value="m" /></datalist>
+          <ModelPicker v-model="form.model" :models="models[form.provider] || []" :loading="loadingModels[form.provider]"
+                       label="Model" :disabled="!admin" style="width:300px" />
         </div>
+        <span v-if="modelErrors[form.provider]" class="hint" style="color:var(--err)">{{ modelErrors[form.provider] }}</span>
       </SettingsRow>
       <SettingsRow title="Creativity" desc="Lower gives more consistent, factual replies.">
         <div class="slider"><div class="row-sb"><label for="temperature" class="muted small">Precise ↔ Creative</label>
@@ -69,7 +70,8 @@
           <select v-model="a.provider" class="select" style="width:170px" :aria-label="`Provider for ${a.name}`" :disabled="!admin">
             <option value="">Workspace model</option>
             <option v-for="p in providers.filter((x) => x.connected)" :key="p.id" :value="p.id">{{ p.label }}</option></select>
-          <input v-model="a.model" class="input" placeholder="model" style="width:180px" :aria-label="`Model for ${a.name}`" :disabled="!admin || !a.provider">
+          <ModelPicker v-if="a.provider" v-model="a.model" :models="models[a.provider] || []" :loading="loadingModels[a.provider]"
+                       :label="`Model for ${a.name}`" :disabled="!admin" style="width:240px" />
         </div>
       </div>
     </SettingsGroup>
@@ -78,9 +80,10 @@
 </template>
 
 <script setup>
-import { computed, reactive, ref } from "vue";
+import { computed, reactive, ref, watch } from "vue";
 import AppIcon from "../../components/AppIcon.vue";
 import SaveBar from "../../components/SaveBar.vue";
+import ModelPicker from "../../components/ModelPicker.vue";
 import SettingsGroup from "../../components/SettingsGroup.vue";
 import SettingsRow from "../../components/SettingsRow.vue";
 import ToggleSwitch from "../../components/ToggleSwitch.vue";
@@ -92,7 +95,20 @@ import { ask, ago, fail, signals, toast } from "../../utils.js";
 const COLORS = { openai: "#10A37F", anthropic: "#D97757", gemini: "#4285F4", deepseek: "#4D6BFE", qwen: "#7C5CFF", openai_compatible: "#5B6573" };
 const admin = computed(() => can("admin"));
 const providers = ref([]);
-const models = reactive({});
+const models = reactive({});          // provider -> model ids the saved key can use
+const loadingModels = reactive({});
+const modelErrors = reactive({});
+
+// Load the model list for a provider that has a key (once per page visit; the API caches it too).
+async function loadModels(id, fresh = false) {
+  const p = providers.value.find((x) => x.id === id);
+  if (!id || !admin.value || !p?.connected || loadingModels[id] || (models[id] && !fresh)) return;
+  loadingModels[id] = true;
+  modelErrors[id] = "";
+  try { models[id] = (await get(`/settings/providers/${id}/models`, fresh ? { fresh: 1 } : undefined)).models; }
+  catch (e) { modelErrors[id] = `Couldn't load the model list (${e.message}). You can still type a model name.`; models[id] = []; }
+  finally { loadingModels[id] = false; }
+}
 const openPanel = ref(null);
 const keyDraft = reactive({ api_key: "", base_url: "" });
 const testResult = reactive({ text: "", color: "" });
@@ -128,13 +144,20 @@ function toggle(id) {
   testResult.text = "";
 }
 async function refreshProviders() { providers.value = (await get("/settings/llm")).providers; }
+
+// Fill the pickers for the workspace provider and every per-agent provider in use.
+watch(() => [ready.value, form.provider, providers.value, ...(form.agents || []).map((a) => a.provider)], () => {
+  if (!ready.value) return;
+  loadModels(form.provider);
+  for (const a of form.agents || []) loadModels(a.provider);
+}, { immediate: true });
 async function saveKey(id) {
   try {
     const r = await put(`/settings/providers/${id}`, { ...keyDraft });
     keyDraft.api_key = "";
     if (r.switched) {
       // First real key: the workspace now answers with it (the API switched "Platform default" → this key).
-      toast(`Key saved. Agents now answer with ${providers.value.find((p) => p.id === id)?.label || id}${r.settings.model ? " · " + r.settings.model : ""}`);
+      toast(`Key saved. Agents now answer with ${providers.value.find((p) => p.id === id)?.label || id}${r.settings.model ? " · " + r.settings.model : ""}. Change the model below if you prefer another.`);
       await reload();
       signals.setup++;
     } else {
@@ -149,6 +172,7 @@ async function test(id) {
   try {
     const r = await post(`/settings/providers/${id}/test`);
     models[id] = r.models;
+    modelErrors[id] = "";
     testResult.text = `✓ Verified · ${r.models.length} models available`; testResult.color = "var(--ok)";
     if (r.model_selected) { await reload(); signals.setup++; } else refreshProviders();
   } catch (e) { testResult.text = e.message; testResult.color = "var(--err)"; }

@@ -109,7 +109,10 @@ def test_router_falls_back_to_platform(app, client, monkeypatch):
     assert r.status_code == 200 and r.get_json()["meta"]["model"] == "Platform default"
 
 
-def test_setup_status_and_first_key_switches_workspace(client):
+def test_setup_status_and_first_key_switches_workspace(client, monkeypatch):
+    def offline(self):
+        raise LLMError("offline")
+    monkeypatch.setattr(OpenAICompatible, "list_models", offline)   # no network in tests: keep the starter model
     assert client.get("/api/me").get_json()["setup"] == {"model_ready": False, "real_whatsapp": False, "test_tools": True}
     r = client.put("/api/settings/providers/deepseek", json={"api_key": "sk-deep"}).get_json()
     assert r["switched"] and r["settings"]["source"] == "byok" and r["settings"]["model"] == "deepseek-chat"
@@ -166,3 +169,17 @@ def test_evolution_lid_senders():
     assert evolution_sender({"remoteJid": "573001112233@s.whatsapp.net"}) == "573001112233"
     assert evolution_sender({"remoteJid": "1203@g.us", "participant": "999@lid", "participantPn": "573001112233@s.whatsapp.net"}) == "573001112233"
     assert send_target("573001112233") == "573001112233"
+
+
+def test_model_picker_lists_models_and_first_key_uses_an_available_one(client, monkeypatch):
+    from app.llm import router
+    router._MODEL_CACHE.clear()
+    monkeypatch.setattr(Gemini, "list_models", lambda self: ["gemini-3-flash-preview", "gemini-3-pro-preview"])
+    r = client.put("/api/settings/providers/gemini", json={"api_key": "AIza-test"}).get_json()
+    # the starter (gemini-2.5-flash) isn't offered by this key, so the first listed model is used
+    assert r["switched"] and r["settings"]["model"] == "gemini-3-flash-preview"
+    assert client.get("/api/settings/providers/gemini/models").get_json() == {"models": ["gemini-3-flash-preview", "gemini-3-pro-preview"]}
+    # any model name can be chosen, including ones the list doesn't show
+    client.patch("/api/settings/llm", json={"model": "gemini-3-pro-preview"})
+    assert client.get("/api/settings/llm").get_json()["active_model"] == "gemini · gemini-3-pro-preview"
+    assert client.get("/api/settings/providers/openai/models").status_code == 502   # no key saved

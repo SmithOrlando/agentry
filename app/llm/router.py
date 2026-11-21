@@ -9,6 +9,8 @@ The platform default's provider/model/key are never sent to the browser.
 """
 from __future__ import annotations
 
+import time
+
 from dataclasses import dataclass
 
 from flask import current_app
@@ -120,6 +122,31 @@ def describe_active_model(workspace_id: int, agent: dict | None) -> str:
     return "Platform default" if c.is_platform else f"{c.provider} · {c.model}"
 
 
+_MODEL_CACHE: dict = {}          # (workspace_id, provider) -> (time, [model ids])
+MODEL_CACHE_SECONDS = 600
+
+
+def list_models(workspace_id: int, provider: str, fresh: bool = False) -> list[str]:
+    """Models the workspace's saved key can use (cached 10 minutes). Raises LLMError if there is no key
+    or the provider refuses it."""
+    key = (workspace_id, provider)
+    hit = _MODEL_CACHE.get(key)
+    if hit and not fresh and time.time() - hit[0] < MODEL_CACHE_SECONDS:
+        return hit[1]
+    row = query_one("SELECT api_key_enc, base_url FROM provider_keys WHERE workspace_id = ? AND provider = ?",
+                    [workspace_id, provider])
+    if not row:
+        raise LLMError("no key saved for this provider")
+    client = make_client(provider, decrypt(row["api_key_enc"]), row["base_url"], current_app.config["LLM_TIMEOUT_SECONDS"])
+    models = client.list_models()
+    _MODEL_CACHE[key] = (time.time(), models)
+    return models
+
+
+def forget_models(workspace_id: int, provider: str) -> None:
+    _MODEL_CACHE.pop((workspace_id, provider), None)
+
+
 def test_key(workspace_id: int, provider: str) -> dict:
     row = query_one("SELECT id, api_key_enc, base_url FROM provider_keys WHERE workspace_id = ? AND provider = ?",
                     [workspace_id, provider])
@@ -128,5 +155,6 @@ def test_key(workspace_id: int, provider: str) -> dict:
     client = make_client(provider, decrypt(row["api_key_enc"]), row["base_url"],
                          current_app.config["LLM_TIMEOUT_SECONDS"])
     models = client.list_models()
+    _MODEL_CACHE[(workspace_id, provider)] = (time.time(), models)
     update("provider_keys", row["id"], {"verified_at": utcnow()})
     return {"ok": True, "models": models}
