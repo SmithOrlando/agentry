@@ -30,6 +30,7 @@ AGENT_DEFAULTS = {
     "handoff_keywords": ["human", "agent", "person", "complaint", "refund"],
     "never_topics": ["legal advice", "medical advice", "competitor prices"],
     "sign_replies": False,
+    "general_knowledge": True,   # answer general questions; False = only questions about the business
 }
 
 SECURITY_DEFAULTS = {

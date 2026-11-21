@@ -18,6 +18,9 @@
     <SettingsRow title="Never talk about" desc="Topics agents must decline and hand off." stack>
       <ChipsInput v-model="form.never_topics" label="blocked topics" :disabled="!admin" />
     </SettingsRow>
+    <SettingsRow title="Answer general questions" desc="On: agents also answer everyday questions from general knowledge. Off: they only talk about your business. Business facts always come from your knowledge files.">
+      <ToggleSwitch v-model="form.general_knowledge" label="Answer general questions" :disabled="!admin" />
+    </SettingsRow>
     <SettingsRow title="Sign replies" desc="Adds the agent’s name at the end of each message.">
       <ToggleSwitch v-model="form.sign_replies" label="Sign replies" :disabled="!admin" />
     </SettingsRow>

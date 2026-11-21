@@ -183,3 +183,23 @@ def test_model_picker_lists_models_and_first_key_uses_an_available_one(client, m
     client.patch("/api/settings/llm", json={"model": "gemini-3-pro-preview"})
     assert client.get("/api/settings/llm").get_json()["active_model"] == "gemini · gemini-3-pro-preview"
     assert client.get("/api/settings/providers/openai/models").status_code == 502   # no key saved
+
+
+def test_prompt_is_strict_on_business_facts_but_answers_general_questions(app, client):
+    from app.services.agents import build_messages
+    ws_id = client.get("/api/me").get_json()["workspace"]["id"]
+    with app.test_request_context():
+        system = build_messages(ws_id, None, [], "what's the capital of China?")[0][0]["content"]
+        assert "never invent" in system and "general knowledge" in system
+    client.patch("/api/settings/agent-defaults", json={"general_knowledge": False})
+    with app.test_request_context():
+        system = build_messages(ws_id, None, [], "what's the capital of China?")[0][0]["content"]
+        assert "Only help with questions about" in system
+
+
+def test_migration_updates_untouched_customer_service_text():
+    from pathlib import Path
+    sql = (Path(__file__).parent.parent / "app/migrations/003_friendlier_customer_service.sql").read_text()
+    from app.services.agents import TEMPLATES
+    assert TEMPLATES["Customer Service"][2] in sql          # new text = current template
+    assert "Only answer from the knowledge sources" in sql   # old text is matched exactly

@@ -134,3 +134,11 @@
   every time you open the page (`GET /api/settings/providers/<p>/models`, cached 10 minutes), with
   "Other (type a name)…" for anything else, e.g. `gemini-3-flash-preview`. The per-agent model fields use the same picker.
 - When the first key is saved and the starter model isn't offered by that key, the first model it lists is used instead.
+
+## 1.5.2 (2026-11-21)
+- **Agents no longer refuse everything they can't find in the knowledge files.** Business facts (prices, stock,
+  hours, policies, orders) still come only from the knowledge files, so the agent never invents them. General
+  questions are now answered normally. New setting **Settings › Agents › Answer general questions** (on by
+  default; off = only talk about the business).
+- Starter Customer Service text no longer says "Only answer from the knowledge sources". Migration 003 updates
+  agents that still have the old text; edited ones are left alone.

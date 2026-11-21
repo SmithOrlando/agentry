@@ -59,7 +59,8 @@ SECTION_DOC = {
     "agent-defaults": ("Rules every agent follows", AGENT_DEFAULTS, {
         "handoff_keywords": (A(S), "Words that send the chat to a human"),
         "never_topics": (A(S), "Topics agents must decline (and hand off on WhatsApp)"),
-        "sign_replies": (B, "Append the agent's name to WhatsApp replies")}),
+        "sign_replies": (B, "Append the agent's name to WhatsApp replies"),
+        "general_knowledge": (B, "Answer general questions from general knowledge (default true); false = only questions about the business")}),
     "security": ("Data retention", SECURITY_DEFAULTS, {
         "retention_days": (I, "Delete messages older than this many days (0 = keep forever). Applied by `flask purge`")}),
 }

@@ -9,9 +9,8 @@ from .settings import get_section, get_workspace
 
 TEMPLATES = {
     "Customer Service": ("Orders, returns, FAQs", "#1F6FEB",
-                         "You are the customer service agent for {business}. Be warm and brief — two or three "
-                         "sentences. Only answer from the knowledge sources. If you are not sure, say a teammate "
-                         "will follow up."),
+                         "You are the customer service agent for {business}. Be warm and brief: two or three "
+                         "sentences. Help customers with orders, returns and questions about {business}."),
     "Project Manager": ("Tasks, deadlines, follow-ups", "#E8590C",
                         "You coordinate projects for {business}. Confirm dates, owners and next steps clearly. "
                         "Never promise a date that is not in the sources."),
@@ -66,10 +65,17 @@ def build_messages(workspace_id: int, agent: dict | None, history: list[dict], u
     parts = []
     instructions = (agent or {}).get("instructions") or "You are a helpful assistant for this business."
     parts.append(instructions.replace("{business}", ws["name"]))
+    business = ws["name"]
     rules = [
         f"Reply in the customer's language; if unclear, use {ws['default_language']}.",
-        "Use only the knowledge sources below for facts about the business (prices, policies, dates). "
-        "If the answer is not in them, say you will check with a teammate.",
+        # Strict where a wrong answer costs the business; helpful everywhere else.
+        f"For facts about {business} itself (prices, stock, opening hours, policies, orders, accounts), use only "
+        "the knowledge sources below and never invent them. If the answer isn't there, say you'll check with a teammate.",
+        f"For anything else (general questions, explanations, small talk), answer helpfully and briefly from general "
+        f"knowledge, then offer help with {business} if it fits."
+        if defaults.get("general_knowledge", True) else
+        f"Only help with questions about {business}. For anything else, say politely that you can only help with {business}.",
+        "Never claim you can see information you don't have, such as message counts or account history.",
     ]
     if channel == "whatsapp":
         rules.append("This is a WhatsApp chat: keep replies short, plain text, no markdown headings.")
