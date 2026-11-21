@@ -730,6 +730,10 @@ def write_frontend_md():
          "| `toasts` / `toast` / `fail` | `toast(message, isError?)`, `fail(error)` | Toast queue rendered by `App.vue`; `fail` shows an error's message |",
          "| `applyTheme` / `savedTheme` / `currentTheme` | `applyTheme(\"system\" \\| \"light\" \\| \"dark\")` | Theme stored in `localStorage[\"agentry-theme\"]`, applied as `<html data-theme>` |",
          "| `signals` | reactive `{ numbers, inbox, setup }` | Tiny event bus: increment to make the sidebar reload (`signals.numbers++` after changing WhatsApp numbers, `signals.inbox++` after inbox actions, `signals.setup++` after model settings/keys change) |", "",
+         "## 3b. `src/markdown.js`", "",
+         "`renderMarkdown(text) → html`: a small Markdown renderer for agent replies, with no dependencies. It escapes everything, then supports "
+         "paragraphs, `#` headings, bold/italic/strike, inline and fenced code, lists (one nesting level), quotes, rules, http(s) links and simple tables. "
+         "Its output is safe for `v-html`. Styles: `.md` in `styles/app.css`.", "",
          "## 4. `src/composables/useSettingsForm.js`", "",
          "`useSettingsForm(loadFn, saveFn) → { form, dirty, saving, save, discard, ready, reload }`", "",
          "| Return | Description |", "|---|---|",
@@ -799,7 +803,7 @@ def write_frontend_md():
           "- Hide controls the user can't use with `can(role)`, but treat a `403` as possible anyway.",
           "- Show errors with `fail(e)`; success with `toast(\"…\")`.",
           "- After changing numbers or chats, bump `signals.numbers` / `signals.inbox`.",
-          "- No `v-html` with data. Colours only via CSS variables in `styles/app.css` (both themes).",
+          "- No `v-html` with data, except the output of `renderMarkdown()` from `src/markdown.js`, which escapes all HTML first and only allows http(s) links. Colours only via CSS variables in `styles/app.css` (both themes).",
           "- New screen: add a route in `router.js`, a link in `AppShell.vue` (or `SettingsLayout.vue`), then run `python3 scripts/gen_api_docs.py`.", ""]
     (DOCS / "API_FRONTEND.md").write_text("\n".join(L), encoding="utf-8")
 

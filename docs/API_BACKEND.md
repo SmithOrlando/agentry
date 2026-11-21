@@ -209,7 +209,7 @@ Example response `200`:
 
 ```json
 {
-  "csrf": "FHscjXZ6CNSpsVPYrKRzQzbjyItnAC7YJp6t8JRn-5M",
+  "csrf": "gBGP2rEX0iBHXAd7s4Yo6uZngFil2G8XuLsVX97EXBE",
   "setup": {
     "model_ready": false,
     "real_whatsapp": false,
@@ -256,7 +256,7 @@ Example response `200`:
       "agent_id": 1,
       "id": 1,
       "title": "What is the return policy for sale items?",
-      "updated_at": "2026-11-21T03:35:44Z"
+      "updated_at": "2026-11-21T03:48:53Z"
     }
   ]
 }
@@ -325,7 +325,7 @@ Example response `200`:
 {
   "messages": [
     {
-      "created_at": "2026-11-21T03:35:44Z",
+      "created_at": "2026-11-21T03:48:53Z",
       "id": 1,
       "meta": {},
       "role": "user",
@@ -333,7 +333,7 @@ Example response `200`:
       "text": "What is the return policy for sale items?"
     },
     {
-      "created_at": "2026-11-21T03:35:44Z",
+      "created_at": "2026-11-21T03:48:53Z",
       "id": 2,
       "meta": {
         "agent": "Customer Service",
@@ -351,10 +351,10 @@ Example response `200`:
   ],
   "session": {
     "agent_id": 1,
-    "created_at": "2026-11-21T03:35:44Z",
+    "created_at": "2026-11-21T03:48:53Z",
     "id": 1,
     "title": "What is the return policy for sale items?",
-    "updated_at": "2026-11-21T03:35:44Z",
+    "updated_at": "2026-11-21T03:48:53Z",
     "user_id": 1,
     "workspace_id": 1
   }
@@ -482,14 +482,14 @@ Example response `200`:
       "active_model": "Platform default",
       "chat_count": 0,
       "color": "#1F6FEB",
-      "created_at": "2026-11-21T03:35:44Z",
+      "created_at": "2026-11-21T03:48:53Z",
       "description": "Orders, returns, FAQs",
       "file_count": 0,
       "id": 1,
       "instructions": "You are the customer service agent for {business}. Be warm and brief: two or three sentences. Help customers with orders, returns and que…",
       "model_override": null,
       "name": "Customer Service",
-      "updated_at": "2026-11-21T03:35:44Z",
+      "updated_at": "2026-11-21T03:48:53Z",
       "workspace_id": 1
     },
     {
@@ -497,14 +497,14 @@ Example response `200`:
       "active_model": "Platform default",
       "chat_count": 0,
       "color": "#E8590C",
-      "created_at": "2026-11-21T03:35:44Z",
+      "created_at": "2026-11-21T03:48:53Z",
       "description": "Tasks, deadlines, follow-ups",
       "file_count": 0,
       "id": 2,
       "instructions": "You coordinate projects for {business}. Confirm dates, owners and next steps clearly. Never promise a date that is not in the sources.",
       "model_override": null,
       "name": "Project Manager",
-      "updated_at": "2026-11-21T03:35:44Z",
+      "updated_at": "2026-11-21T03:48:53Z",
       "workspace_id": 1
     },
     "… 2 more"
@@ -675,7 +675,7 @@ Example response `200`:
         }
       ],
       "chunk_count": 0,
-      "created_at": "2026-11-21T03:35:44Z",
+      "created_at": "2026-11-21T03:48:53Z",
       "error": "That address is not allowed",
       "filename": "http://127.0.0.1/internal",
       "id": 3,
@@ -683,7 +683,7 @@ Example response `200`:
       "size_bytes": 0,
       "source_url": "http://127.0.0.1/internal",
       "status": "failed",
-      "updated_at": "2026-11-21T03:35:44Z"
+      "updated_at": "2026-11-21T03:48:53Z"
     },
     {
       "agents": [
@@ -693,7 +693,7 @@ Example response `200`:
         }
       ],
       "chunk_count": 1,
-      "created_at": "2026-11-21T03:35:44Z",
+      "created_at": "2026-11-21T03:48:53Z",
       "error": null,
       "filename": "shipping.txt",
       "id": 2,
@@ -701,7 +701,7 @@ Example response `200`:
       "size_bytes": 43,
       "source_url": null,
       "status": "ready",
-      "updated_at": "2026-11-21T03:35:44Z"
+      "updated_at": "2026-11-21T03:48:53Z"
     },
     "… 1 more"
   ],
@@ -968,19 +968,19 @@ Example response `200`:
   "connections": [
     {
       "account_name": "",
-      "created_at": "2026-11-21T03:35:44Z",
+      "created_at": "2026-11-21T03:48:53Z",
       "default_agent_id": 1,
       "default_mode": "draft",
       "id": 1,
-      "last_event_at": "2026-11-21T03:35:44Z",
-      "last_message_at": "2026-11-21T03:35:44Z",
+      "last_event_at": "2026-11-21T03:48:53Z",
+      "last_message_at": "2026-11-21T03:48:53Z",
       "name": "Support line",
       "phone_number": "+57 300 000 4821",
       "profile_picture": "",
       "provider": "sandbox",
       "status": "connected",
       "status_detail": "",
-      "webhook_url": "https://agents.example.com/webhooks/sandbox/1/8PBP09-G8YumgTAHwiFUy7rqzgiw-d2H"
+      "webhook_url": "https://agents.example.com/webhooks/sandbox/1/xoE_JEQ4r3WHKNoSFvMFGrl_EkHUrFT-"
     }
   ]
 }
@@ -1025,7 +1025,7 @@ Example response `201`:
 {
   "connection": {
     "account_name": "",
-    "created_at": "2026-11-21T03:35:44Z",
+    "created_at": "2026-11-21T03:48:53Z",
     "default_agent_id": null,
     "default_mode": null,
     "id": 1,
@@ -1036,7 +1036,7 @@ Example response `201`:
     "provider": "sandbox",
     "status": "connected",
     "status_detail": "",
-    "webhook_url": "https://agents.example.com/webhooks/sandbox/1/8PBP09-G8YumgTAHwiFUy7rqzgiw-d2H"
+    "webhook_url": "https://agents.example.com/webhooks/sandbox/1/xoE_JEQ4r3WHKNoSFvMFGrl_EkHUrFT-"
   }
 }
 ```
@@ -1086,7 +1086,7 @@ Example response `200`:
 {
   "connection": {
     "account_name": "",
-    "created_at": "2026-11-21T03:35:44Z",
+    "created_at": "2026-11-21T03:48:53Z",
     "default_agent_id": 1,
     "default_mode": "draft",
     "id": 1,
@@ -1097,7 +1097,7 @@ Example response `200`:
     "provider": "sandbox",
     "status": "connected",
     "status_detail": "",
-    "webhook_url": "https://agents.example.com/webhooks/sandbox/1/8PBP09-G8YumgTAHwiFUy7rqzgiw-d2H"
+    "webhook_url": "https://agents.example.com/webhooks/sandbox/1/xoE_JEQ4r3WHKNoSFvMFGrl_EkHUrFT-"
   }
 }
 ```
@@ -1191,7 +1191,7 @@ Example response `200`:
 {
   "connection": {
     "account_name": "",
-    "created_at": "2026-11-21T03:35:44Z",
+    "created_at": "2026-11-21T03:48:53Z",
     "default_agent_id": 1,
     "default_mode": "draft",
     "id": 1,
@@ -1202,7 +1202,7 @@ Example response `200`:
     "provider": "sandbox",
     "status": "connected",
     "status_detail": "",
-    "webhook_url": "https://agents.example.com/webhooks/sandbox/1/8PBP09-G8YumgTAHwiFUy7rqzgiw-d2H"
+    "webhook_url": "https://agents.example.com/webhooks/sandbox/1/xoE_JEQ4r3WHKNoSFvMFGrl_EkHUrFT-"
   }
 }
 ```
@@ -1297,7 +1297,7 @@ Example response `200`:
       "drafts": 0,
       "handoff_active": 0,
       "id": 2,
-      "last_message_at": "2026-11-21T03:35:44Z",
+      "last_message_at": "2026-11-21T03:48:53Z",
       "last_message_preview": "Hola",
       "mode": "draft",
       "unread_count": 1,
@@ -1313,7 +1313,7 @@ Example response `200`:
       "drafts": 2,
       "handoff_active": 0,
       "id": 1,
-      "last_message_at": "2026-11-21T03:35:44Z",
+      "last_message_at": "2026-11-21T03:48:53Z",
       "last_message_preview": "And shipping to Bogota?",
       "mode": "draft",
       "unread_count": 2,
@@ -1367,12 +1367,12 @@ Example response `200`:
     "connection_name": "Support line",
     "contact_id": 1,
     "contact_name": "Maria López",
-    "contact_since": "2026-11-21T03:35:44Z",
-    "created_at": "2026-11-21T03:35:44Z",
+    "contact_since": "2026-11-21T03:48:53Z",
+    "created_at": "2026-11-21T03:48:53Z",
     "handoff_active": 0,
     "id": 1,
     "last_away_sent_at": null,
-    "last_message_at": "2026-11-21T03:35:44Z",
+    "last_message_at": "2026-11-21T03:48:53Z",
     "last_message_preview": "And shipping to Bogota?",
     "mode": "draft",
     "opted_out": 0,
@@ -1390,7 +1390,7 @@ Example response `200`:
     {
       "agent_name": null,
       "author": "customer",
-      "created_at": "2026-11-21T03:35:44Z",
+      "created_at": "2026-11-21T03:48:53Z",
       "direction": "in",
       "error": null,
       "id": 1,
@@ -1402,7 +1402,7 @@ Example response `200`:
     {
       "agent_name": "Customer Service",
       "author": "agent",
-      "created_at": "2026-11-21T03:35:44Z",
+      "created_at": "2026-11-21T03:48:53Z",
       "direction": "out",
       "error": null,
       "id": 2,
@@ -1421,7 +1421,7 @@ Example response `200`:
   "stats": {
     "agent_replies": 0,
     "drafts_approved": 0,
-    "first_message": "2026-11-21T03:35:44Z"
+    "first_message": "2026-11-21T03:48:53Z"
   }
 }
 ```
@@ -1693,7 +1693,7 @@ Example response `200`:
     "agent_id": 1,
     "author": "agent",
     "chat_id": 1,
-    "created_at": "2026-11-21T03:35:44Z",
+    "created_at": "2026-11-21T03:48:53Z",
     "direction": "out",
     "error": null,
     "id": 2,
@@ -2399,13 +2399,13 @@ Example response `200`:
 {
   "invites": [
     {
-      "created_at": "2026-11-21T03:35:44Z",
+      "created_at": "2026-11-21T03:48:53Z",
       "email": "lee@example.com",
       "id": 2,
       "role": "supervisor"
     },
     {
-      "created_at": "2026-11-21T03:35:44Z",
+      "created_at": "2026-11-21T03:48:53Z",
       "email": "sam@example.com",
       "id": 1,
       "role": "supervisor"
@@ -2416,7 +2416,7 @@ Example response `200`:
     {
       "email": "owner@example.com",
       "id": 1,
-      "last_active_at": "2026-11-21T03:35:44Z",
+      "last_active_at": "2026-11-21T03:48:53Z",
       "name": "Ana Owner",
       "role": "owner"
     }
@@ -2460,11 +2460,11 @@ Example response `201`:
   "invites": [
     {
       "email": "sam@example.com",
-      "link": "https://agents.example.com/register?invite=CyiDeeH7rxNYWrO5OoCL4tlVs-5WLeVa"
+      "link": "https://agents.example.com/register?invite=fZwSRM7kxLxRywhlffKm-Pi9Jq3Px7wP"
     },
     {
       "email": "lee@example.com",
-      "link": "https://agents.example.com/register?invite=kqkR6itUY3b8H74BrJuRHpeLjP68aVhC"
+      "link": "https://agents.example.com/register?invite=t_z1QcQn353qTMmPbwVzqZooy6tpBBN7"
     }
   ]
 }
@@ -2631,13 +2631,13 @@ Example response `200`:
   "entries": [
     {
       "action": "changed password",
-      "created_at": "2026-11-21T03:35:45Z",
+      "created_at": "2026-11-21T03:48:53Z",
       "target": "",
       "user_name": "Ana Owner"
     },
     {
       "action": "removed member",
-      "created_at": "2026-11-21T03:35:45Z",
+      "created_at": "2026-11-21T03:48:53Z",
       "target": "sam@example.com",
       "user_name": "Ana Owner"
     },
@@ -2684,19 +2684,19 @@ Example response `200`:
   "chats": [
     {
       "agent_id": 1,
-      "created_at": "2026-11-21T03:35:44Z",
+      "created_at": "2026-11-21T03:48:53Z",
       "id": 1,
       "messages": [
         {
           "author": "customer",
-          "created_at": "2026-11-21T03:35:44Z",
+          "created_at": "2026-11-21T03:48:53Z",
           "direction": "in",
           "status": "received",
           "text": "Can I return sale items?"
         },
         {
           "author": "agent",
-          "created_at": "2026-11-21T03:35:44Z",
+          "created_at": "2026-11-21T03:48:53Z",
           "direction": "out",
           "status": "sent",
           "text": "Hi Maria! Sale items can be returned within 14 days for store credit."
@@ -2710,25 +2710,25 @@ Example response `200`:
   ],
   "contacts": [
     {
-      "created_at": "2026-11-21T03:35:44Z",
+      "created_at": "2026-11-21T03:48:53Z",
       "name": "Maria López",
       "opted_out": 0,
       "tags": "[\"Returning\"]",
       "wa_id": "573001119014"
     }
   ],
-  "exported_at": "2026-11-21T03:35:45Z",
+  "exported_at": "2026-11-21T03:48:53Z",
   "knowledge_files": [
     {
       "chunk_count": 1,
-      "created_at": "2026-11-21T03:35:44Z",
+      "created_at": "2026-11-21T03:48:53Z",
       "filename": "Returns FAQ",
       "kind": "qa",
       "status": "ready"
     },
     {
       "chunk_count": 1,
-      "created_at": "2026-11-21T03:35:44Z",
+      "created_at": "2026-11-21T03:48:53Z",
       "filename": "shipping.txt",
       "kind": "txt",
       "status": "ready"
@@ -2768,7 +2768,7 @@ Inbound events from Evolution API, a generic gateway or the sandbox. The URL (wi
 Example request:
 
 ```http
-POST /webhooks/sandbox/1/8PBP09-G8YumgTAHwiFUy7rqzgiw-d2H
+POST /webhooks/sandbox/1/xoE_JEQ4r3WHKNoSFvMFGrl_EkHUrFT-
 Content-Type: application/json
 
 {

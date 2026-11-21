@@ -53,6 +53,10 @@ catch (e) { if (e instanceof ApiError && e.status === 404) toast("Draft already 
 | `applyTheme` / `savedTheme` / `currentTheme` | `applyTheme("system" \| "light" \| "dark")` | Theme stored in `localStorage["agentry-theme"]`, applied as `<html data-theme>` |
 | `signals` | reactive `{ numbers, inbox, setup }` | Tiny event bus: increment to make the sidebar reload (`signals.numbers++` after changing WhatsApp numbers, `signals.inbox++` after inbox actions, `signals.setup++` after model settings/keys change) |
 
+## 3b. `src/markdown.js`
+
+`renderMarkdown(text) → html`: a small Markdown renderer for agent replies, with no dependencies. It escapes everything, then supports paragraphs, `#` headings, bold/italic/strike, inline and fenced code, lists (one nesting level), quotes, rules, http(s) links and simple tables. Its output is safe for `v-html`. Styles: `.md` in `styles/app.css`.
+
 ## 4. `src/composables/useSettingsForm.js`
 
 `useSettingsForm(loadFn, saveFn) → { form, dirty, saving, save, discard, ready, reload }`
@@ -153,6 +157,7 @@ Every backend call in the Vue code, the function it's made from, and the endpoin
 |---|---|---|
 | `loadSessions` | `GET /api/playground/sessions` | [`GET /api/playground/sessions`](API_BACKEND.md#get-api-playground-sessions) |
 | `open` | `GET /api/playground/sessions/&lt;id&gt;` | [`GET /api/playground/sessions/{sid}`](API_BACKEND.md#get-api-playground-sessions-sid) |
+| `removeSession` | `DELETE /api/playground/sessions/&lt;id&gt;` | [`DELETE /api/playground/sessions/{sid}`](API_BACKEND.md#delete-api-playground-sessions-sid) |
 | `send` | `POST /api/playground/sessions` | [`POST /api/playground/sessions`](API_BACKEND.md#post-api-playground-sessions) |
 | `send` | `POST /api/playground/sessions/&lt;id&gt;/messages` | [`POST /api/playground/sessions/{sid}/messages`](API_BACKEND.md#post-api-playground-sessions-sid-messages) |
 | `on page load` | `GET /api/agents` | [`GET /api/agents`](API_BACKEND.md#get-api-agents) |
@@ -295,5 +300,5 @@ Every backend call in the Vue code, the function it's made from, and the endpoin
 - Hide controls the user can't use with `can(role)`, but treat a `403` as possible anyway.
 - Show errors with `fail(e)`; success with `toast("…")`.
 - After changing numbers or chats, bump `signals.numbers` / `signals.inbox`.
-- No `v-html` with data. Colours only via CSS variables in `styles/app.css` (both themes).
+- No `v-html` with data, except the output of `renderMarkdown()` from `src/markdown.js`, which escapes all HTML first and only allows http(s) links. Colours only via CSS variables in `styles/app.css` (both themes).
 - New screen: add a route in `router.js`, a link in `AppShell.vue` (or `SettingsLayout.vue`), then run `python3 scripts/gen_api_docs.py`.

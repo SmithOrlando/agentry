@@ -142,3 +142,9 @@
   default; off = only talk about the business).
 - Starter Customer Service text no longer says "Only answer from the knowledge sources". Migration 003 updates
   agents that still have the old text; edited ones are left alone.
+
+## 1.5.3 (2026-11-21)
+- **Markdown in Playground replies:** lists, bold and italics, headings, code, quotes, links and tables render properly
+  (`src/markdown.js`, a small dependency-free renderer that escapes all HTML first).
+- **Delete Playground chats:** a bin icon on each recent chat (shown on hover, always on touch screens) and a
+  **Delete** button in the Playground header.
